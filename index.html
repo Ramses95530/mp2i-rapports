@@ -552,10 +552,12 @@ function migrateData(){
 function loadAll(){
   migrateData();
   rapports=lsGet(KEYS.rap,[]);
-  clients=lsGet(KEYS.cli,null)||DEF_CLIENTS.map(function(c){return Object.assign({},c)});
-  personnel=lsGet(KEYS.per,null)||DEF_PERSONNEL.map(function(p){return Object.assign({},p)});
+  clients=lsGet(KEYS.cli,null);
+  if(!clients||!clients.length)clients=DEF_CLIENTS.map(function(c){return Object.assign({},c)});
+  personnel=lsGet(KEYS.per,null);
+  if(!personnel||!personnel.length)personnel=DEF_PERSONNEL.map(function(p){return Object.assign({},p)});
   apiKey=localStorage.getItem(KEYS.api)||"";
-  managerPin=localStorage.getItem(KEYS.pin)||"1234";
+  managerPin=localStorage.getItem(KEYS.pin)||"4500";
   isManagerMode=sessionStorage.getItem(KEYS.mgr)==="1";
 }
 function saveAll(){lsSet(KEYS.rap,rapports);lsSet(KEYS.cli,clients);lsSet(KEYS.per,personnel)}
@@ -860,7 +862,7 @@ function renderPersonnelPickers(){
     +'<div class="chef-dot"></div><div><div class="chip-name" style="color:var(--mt)">Aucun chef de chantier</div></div></div>';
   personnel.forEach(function(p){
     var sel=formSelChef===p.id;
-    chefHtml+='<div class="chef-chip'+(sel?" selected":"")+'" data-pid="'+p.id+'" onclick="selectChef(this.dataset.pid)">';
+    chefHtml+='<div class="chef-chip'+(sel?" selected":"")+'" data-pid="'+p.id+'" onclick="selectChef(this.dataset.pid)">'
       +'<div class="chef-dot"></div>'
       +'<div><div class="chip-name">'+esc(p.prenom)+" "+esc(p.nom)+'</div></div>'
       +'</div>';
@@ -871,7 +873,7 @@ function renderPersonnelPickers(){
   var techHtml='';
   personnel.forEach(function(p){
     var sel=formSelTechs.indexOf(p.id)>=0;
-    techHtml+='<div class="person-chip'+(sel?" selected":"")+'" data-pid="'+p.id+'" onclick="toggleTech(this.dataset.pid)">';
+    techHtml+='<div class="person-chip'+(sel?" selected":"")+'" data-pid="'+p.id+'" onclick="toggleTech(this.dataset.pid)">'
       +'<div class="chip-check">'+(sel?"✓":"")+'</div>'
       +'<div class="chip-name">'+esc(p.prenom)+" "+esc(p.nom)+'</div>'
       +'</div>';
@@ -1762,14 +1764,27 @@ async function syncFromFirestore(){
       }
       lsSet(KEYS.rap,rapports);
       refreshDash();
+      // Rafraîchir le formulaire si ouvert
+      if(currentScreen==="form"){
+        renderPersonnelPickers();
+        renderClientSelect();
+      } else if(currentScreen==="list"){
+        renderList();
+      }
       showSyncBadge();
     }
     var fc=await fsGetOne("config","clients");
-    if(fc&&fc.data&&fc.data.length>=clients.length){clients=fc.data;lsSet(KEYS.cli,clients);}
-    else if(clients.length>0){fsSet("config","clients",{data:clients,updatedAt:new Date().toISOString()})}
+    if(fc&&fc.data&&fc.data.length>=clients.length){
+      clients=fc.data;lsSet(KEYS.cli,clients);
+      if(currentScreen==="form"){renderPersonnelPickers();}
+      if(currentScreen==="clients")renderClientsList();
+    } else if(clients.length>0){fsSet("config","clients",{data:clients,updatedAt:new Date().toISOString()})}
     var fp=await fsGetOne("config","personnel");
-    if(fp&&fp.data&&fp.data.length>=personnel.length){personnel=fp.data;lsSet(KEYS.per,personnel);}
-    else if(personnel.length>0){fsSet("config","personnel",{data:personnel,updatedAt:new Date().toISOString()})}
+    if(fp&&fp.data&&fp.data.length>=personnel.length){
+      personnel=fp.data;lsSet(KEYS.per,personnel);
+      if(currentScreen==="form")renderPersonnelPickers();
+      if(currentScreen==="personnel")renderPersonnelSettings();
+    } else if(personnel.length>0){fsSet("config","personnel",{data:personnel,updatedAt:new Date().toISOString()})}
   }catch(e){console.error("syncFromFirestore:",e)}
 }
 
