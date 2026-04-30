@@ -304,6 +304,21 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
     <button class="btn btn-ghost btn-sm" id="btn-rev-pdf" type="button">📄 PDF</button>
     <button class="btn btn-ghost btn-sm" id="btn-rev-word" type="button">📝 Word</button>
   </div>
+  <!-- MATÉRIAUX — aussi visible dans review pour dépannage non opérationnel -->
+  <div class="card" id="review-materiaux-card" style="display:none;background:linear-gradient(135deg,#0d1f10,#0a1a0d);border-color:#1a3d20">
+    <div class="sec"><span class="sec-lbl" style="color:#4ade80">🔧 Matériaux à commander</span></div>
+    <div style="font-size:12px;color:#4ade80;margin-bottom:12px;background:rgba(34,197,94,.08);border-radius:8px;padding:9px 12px">
+      🔒 <strong>Usage interne MP2I uniquement</strong> — Non transmis au client.
+    </div>
+    <div id="review-mat-list" style="margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input type="text" id="rev-mat-ref" class="inp" placeholder="Référence / Désignation" style="flex:2;font-size:14px">
+      <input type="text" id="rev-mat-qty" class="inp" placeholder="Qté" style="flex:0 0 60px;font-size:14px;text-align:center">
+      <button class="btn btn-success btn-sm" id="btn-rev-mat-add" type="button" style="width:auto;flex-shrink:0">＋</button>
+    </div>
+    <textarea id="rev-mat-notes" class="inp" placeholder="Notes pour le devis…" style="min-height:70px;font-size:14px;margin-bottom:10px"></textarea>
+    <button class="btn btn-ghost btn-sm" id="btn-rev-mat-save" type="button" style="color:#4ade80;border-color:#1a3d20">💾 Sauvegarder les matériaux</button>
+  </div>
   <button class="btn btn-ghost" id="btn-rev-new" type="button">＋ Nouveau rapport</button>
   <div style="height:12px"></div>
 </div>
@@ -1893,6 +1908,194 @@ document.getElementById('btn-rev-word').onclick  = function(){ if(pending)  expo
 document.getElementById('btn-det-pdf').onclick   = function(){ if(selR)     exportPDF(selR); };
 document.getElementById('btn-det-word').onclick  = function(){ if(selR)     exportWord(selR); };
 
+
+// ═══════════════════════════════════════════════════════════════
+// MATÉRIAUX À COMMANDER
+// ═══════════════════════════════════════════════════════════════
+
+// Check if materiaux section should be shown
+// Only for depannage where state is NOT opérationnel (etatIdx !== 0)
+function shouldShowMateriaux(r) {
+  return r && r.type === "depannage" && (r.etatIdx || 0) !== 0;
+}
+
+// Render materiaux list in a container
+function renderMateriauxList(containerId, items) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  if (!items || !items.length) {
+    el.innerHTML = '<div style="font-size:13px;color:#4ade80;opacity:.6;padding:4px 0">Aucun matériau ajouté.</div>';
+    return;
+  }
+  el.innerHTML = items.map(function(m, i) {
+    return '<div style="display:flex;align-items:center;gap:8px;background:rgba(34,197,94,.06);border:1px solid #1a3d20;border-radius:9px;padding:9px 12px;margin-bottom:7px">'
+      + '<div style="flex:0 0 42px;background:#052e16;color:#4ade80;font-size:12px;font-weight:700;border-radius:6px;padding:3px 6px;text-align:center">'+(m.qty||'1')+'x</div>'
+      + '<div style="flex:1;font-size:14px;color:#dde3f0;font-weight:600">'+esc(m.ref)+'</div>'
+      + '<button style="background:transparent;border:1px solid #3d1515;border-radius:7px;padding:5px 9px;cursor:pointer;font-size:13px;color:#ef4444;-webkit-appearance:none" onclick="rmMateriau('+i+')" type="button">✕</button>'
+      + '</div>';
+  }).join('');
+}
+
+// Remove a materiau from selR
+window.rmMateriau = function(i) {
+  if (!selR) return;
+  if (!selR.materiaux) selR.materiaux = [];
+  selR.materiaux.splice(i, 1);
+  renderMateriauxList('materiaux-list', selR.materiaux);
+};
+
+// Add materiau from detail screen
+document.getElementById('btn-mat-add').onclick = function() {
+  var ref = (document.getElementById('mat-ref').value || '').trim();
+  var qty = (document.getElementById('mat-qty').value || '1').trim();
+  if (!ref) { toast('Entre une référence', 'error'); return; }
+  if (!selR) return;
+  if (!selR.materiaux) selR.materiaux = [];
+  selR.materiaux.push({ ref: ref, qty: qty });
+  document.getElementById('mat-ref').value = '';
+  document.getElementById('mat-qty').value = '';
+  renderMateriauxList('materiaux-list', selR.materiaux);
+};
+document.getElementById('mat-ref').onkeydown = function(e) {
+  if (e.key === 'Enter') document.getElementById('btn-mat-add').click();
+};
+
+// Save materiaux to rapport
+document.getElementById('btn-mat-save').onclick = function() {
+  if (!selR) return;
+  var notes = (document.getElementById('mat-notes').value || '').trim();
+  selR.materiauxNotes = notes;
+  // Save to rapports array and Firebase
+  var idx = rapports.findIndex(function(r) { return r.numero === selR.numero; });
+  if (idx >= 0) {
+    rapports[idx].materiaux = selR.materiaux || [];
+    rapports[idx].materiauxNotes = notes;
+    rapports[idx].updatedAt = new Date().toISOString();
+    selR = rapports[idx];
+  }
+  lsSet(K.r, rapports);
+  if (fbReady) fbSaveRapport(selR);
+  toast('Matériaux sauvegardés ✓', 'success');
+};
+
+// Copy devis to clipboard
+document.getElementById('btn-mat-copy-devis').onclick = function() {
+  if (!selR) return;
+  var mats = selR.materiaux || [];
+  var notes = selR.materiauxNotes || '';
+  if (!mats.length) { toast('Aucun matériau à copier', 'error'); return; }
+  var lines = [
+    'DEVIS MATÉRIAUX — MP2I SASU',
+    '═══════════════════════════════',
+    'Rapport : ' + selR.numero,
+    'Date    : ' + fmt(selR.date),
+    'Client  : ' + selR.client,
+    'Site    : ' + (selR.site || '–'),
+    selR.equipement ? 'Équipement : ' + selR.equipement : '',
+    '',
+    'MATÉRIAUX À COMMANDER',
+    '─────────────────────',
+  ];
+  mats.forEach(function(m, i) {
+    lines.push((i+1) + '. [' + (m.qty||'1') + 'x]  ' + m.ref);
+  });
+  if (notes) { lines.push(''); lines.push('Notes : ' + notes); }
+  lines.push('');
+  lines.push('─────────────────────');
+  lines.push('MP2I SASU — Usage interne');
+  navigator.clipboard.writeText(lines.filter(function(l){return l!==null}).join('\n'))
+    .then(function() { toast('Devis copié ✓', 'success'); });
+};
+
+// ── REVIEW screen materiaux ──────────────────────────────────
+var reviewMateriaux = [];
+
+document.getElementById('btn-rev-mat-add').onclick = function() {
+  var ref = (document.getElementById('rev-mat-ref').value || '').trim();
+  var qty = (document.getElementById('rev-mat-qty').value || '1').trim();
+  if (!ref) { toast('Entre une référence', 'error'); return; }
+  reviewMateriaux.push({ ref: ref, qty: qty });
+  document.getElementById('rev-mat-ref').value = '';
+  document.getElementById('rev-mat-qty').value = '';
+  renderRevMatList();
+};
+document.getElementById('rev-mat-ref').onkeydown = function(e) {
+  if (e.key === 'Enter') document.getElementById('btn-rev-mat-add').click();
+};
+
+function renderRevMatList() {
+  var el = document.getElementById('review-mat-list');
+  if (!el) return;
+  if (!reviewMateriaux.length) {
+    el.innerHTML = '<div style="font-size:13px;color:#4ade80;opacity:.6;padding:4px 0">Aucun matériau ajouté.</div>';
+    return;
+  }
+  el.innerHTML = reviewMateriaux.map(function(m, i) {
+    return '<div style="display:flex;align-items:center;gap:8px;background:rgba(34,197,94,.06);border:1px solid #1a3d20;border-radius:9px;padding:9px 12px;margin-bottom:7px">'
+      + '<div style="flex:0 0 42px;background:#052e16;color:#4ade80;font-size:12px;font-weight:700;border-radius:6px;padding:3px 6px;text-align:center">'+(m.qty||'1')+'x</div>'
+      + '<div style="flex:1;font-size:14px;color:#dde3f0;font-weight:600">'+esc(m.ref)+'</div>'
+      + '<button style="background:transparent;border:1px solid #3d1515;border-radius:7px;padding:5px 9px;cursor:pointer;font-size:13px;color:#ef4444;-webkit-appearance:none" onclick="rmRevMat('+i+')" type="button">✕</button>'
+      + '</div>';
+  }).join('');
+}
+window.rmRevMat = function(i) { reviewMateriaux.splice(i, 1); renderRevMatList(); };
+
+document.getElementById('btn-rev-mat-save').onclick = function() {
+  if (!pending) return;
+  pending.materiaux = reviewMateriaux.slice();
+  pending.materiauxNotes = (document.getElementById('rev-mat-notes').value || '').trim();
+  toast('Matériaux enregistrés ✓ — sauvegarde pour les conserver', 'info');
+};
+
+// Patch renderReview to show/hide materiaux card and reset
+var _origRenderReview = renderReview;
+renderReview = function() {
+  _origRenderReview();
+  reviewMateriaux = (pending && pending.materiaux) ? pending.materiaux.slice() : [];
+  var show = pending && shouldShowMateriaux(pending);
+  var mc = document.getElementById('review-materiaux-card');
+  if (mc) mc.style.display = show ? 'block' : 'none';
+  if (show) {
+    renderRevMatList();
+    document.getElementById('rev-mat-notes').value = (pending && pending.materiauxNotes) || '';
+  }
+};
+
+// Patch btn-rev-save to include materiaux in pending before saving
+var _origRevSave = document.getElementById('btn-rev-save').onclick;
+document.getElementById('btn-rev-save').onclick = function() {
+  if (pending) {
+    pending.materiaux = reviewMateriaux.slice();
+    pending.materiauxNotes = (document.getElementById('rev-mat-notes').value || '').trim();
+  }
+  if (_origRevSave) _origRevSave.call(this);
+};
+
+// Patch openDetail to show materiaux section
+var _origOpenDetail = window.openDetail;
+window.openDetail = function(num) {
+  _origOpenDetail(num);
+  var show = shouldShowMateriaux(selR);
+  var mc = document.getElementById('materiaux-card');
+  if (mc) mc.style.display = show ? 'block' : 'none';
+  if (show && selR) {
+    renderMateriauxList('materiaux-list', selR.materiaux || []);
+    document.getElementById('mat-notes').value = selR.materiauxNotes || '';
+    document.getElementById('mat-ref').value = '';
+    document.getElementById('mat-qty').value = '';
+  }
+};
+
+// Also show/hide when etat changes in detail
+var _origEtatClick = window.etatClick;
+window.etatClick = function(cid, i) {
+  _origEtatClick(cid, i);
+  if (cid === 'detail-etat' && selR) {
+    var show = selR.type === 'depannage' && i !== 0;
+    var mc = document.getElementById('materiaux-card');
+    if (mc) mc.style.display = show ? 'block' : 'none';
+  }
+};
 
 // START — wait for DOM + Firebase scripts to be fully loaded
 function startApp() {
