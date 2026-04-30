@@ -137,33 +137,33 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <body>
 <div id="app">
 <div id="hdr">
-  <button id="hdr-back" type="button">\u2190</button>
+  <button id="hdr-back" type="button">←</button>
   <div id="hdr-logo">
-    <div id="hdr-badge">\u26A1</div>
+    <div id="hdr-badge">⚡</div>
     <div>
-      <div id="hdr-name">MP2I \u00B7 IA</div>
+      <div id="hdr-name">MP2I · IA</div>
       <div id="hdr-sub">Rapports d'intervention</div>
     </div>
   </div>
   <div id="hdr-title"></div>
-  <button class="hdr-btn" id="hdr-list-btn" style="display:none" type="button">\U0001F4C1</button>
-  <button class="hdr-btn" id="hdr-settings-btn" style="display:none" type="button">\u2699\uFE0F</button>
+  <button class="hdr-btn" id="hdr-list-btn" style="display:none" type="button">📁</button>
+  <button class="hdr-btn" id="hdr-settings-btn" style="display:none" type="button">⚙️</button>
 </div>
 
 <!-- SETUP -->
 <div class="screen on" id="screen-setup">
 <div class="body" style="justify-content:center;flex:1">
   <div class="card" style="text-align:center;padding:28px 20px">
-    <div style="font-size:56px;margin-bottom:14px">\U0001F916</div>
+    <div style="font-size:56px;margin-bottom:14px">🤖</div>
     <div style="font-size:20px;font-weight:800;margin-bottom:8px">MP2I — Configuration</div>
-    <div style="font-size:14px;color:#6b7a96;line-height:1.6;margin-bottom:20px">Entre ta cl\u00e9 API Anthropic pour activer la g\u00e9n\u00e9ration de rapports par IA.</div>
-    <label class="lbl" style="text-align:left">Cl\u00e9 API Anthropic</label>
+    <div style="font-size:14px;color:#6b7a96;line-height:1.6;margin-bottom:20px">Entre ta clé API Anthropic pour activer la génération de rapports par IA.</div>
+    <label class="lbl" style="text-align:left">Clé API Anthropic</label>
     <input type="password" id="setup-key" class="inp" placeholder="sk-ant-api03-..." style="margin-bottom:10px;font-family:monospace;letter-spacing:1px">
     <div style="font-size:12px;color:#6b7a96;text-align:left;line-height:1.6;margin-bottom:16px">
-      \U0001F4CD <strong style="color:#f5a623">console.anthropic.com</strong> \u2192 G\u00e9rer \u2192 Cl\u00e9s API<br>
-      \U0001F512 Cl\u00e9 stock\u00e9e uniquement sur cet appareil
+      📍 <strong style="color:#f5a623">console.anthropic.com</strong> → Gérer → Clés API<br>
+      🔒 Clé stockée uniquement sur cet appareil
     </div>
-    <button class="btn btn-primary" id="btn-setup-ok" type="button">Activer l'application \u2192</button>
+    <button class="btn btn-primary" id="btn-setup-ok" type="button">Activer l'application →</button>
     <div class="err" id="setup-err" style="display:none;margin-top:12px"></div>
   </div>
 </div>
@@ -172,12 +172,12 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <!-- DASHBOARD -->
 <div class="screen" id="screen-dash">
 <div class="body">
-  <div id="mgr-banner" style="display:none" class="mgr-banner">\U0001F6E1\uFE0F Mode Responsable actif</div>
+  <div id="mgr-banner" style="display:none" class="mgr-banner">🛡️ Mode Responsable actif</div>
   <div id="sync-badge"></div>
   <div class="card card-hero" style="padding:22px 18px;position:relative;overflow:hidden">
-    <div style="font-size:10px;font-weight:700;color:#4ade80;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">IA Activ\u00e9e \u00B7 \u00C9quipe terrain</div>
+    <div style="font-size:10px;font-weight:700;color:#4ade80;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">IA Activée · Équipe terrain</div>
     <div style="font-size:24px;font-weight:800;line-height:1.2;margin-bottom:6px">Rapports<br>d'intervention</div>
-    <div style="font-size:12px;color:#6b7a96">MP2I SASU \u00B7 CFO/CFA \u00B7 \u00CEle-de-France</div>
+    <div style="font-size:12px;color:#6b7a96">MP2I SASU · CFO/CFA · Île-de-France</div>
   </div>
   <div class="stats-row" id="dash-stats"></div>
   <div>
@@ -205,39 +205,39 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
       <label class="lbl">Client</label>
       <div class="sel-wrap"><select class="inp" id="f-client"></select></div>
     </div>
-    <div class="marche-tag" id="f-marche" style="display:none">\U0001F4C4 March\u00e9 : <strong id="f-marche-val"></strong></div>
+    <div class="marche-tag" id="f-marche" style="display:none">📄 Marché : <strong id="f-marche-val"></strong></div>
     <div style="margin-bottom:10px">
       <label class="lbl">Site / Adresse</label>
       <div class="sel-wrap"><select class="inp" id="f-site"></select></div>
     </div>
-    <input type="text" id="f-site-custom" class="inp" placeholder="Saisir l'adresse compl\u00e8te..." style="display:none;margin-top:-2px">
+    <input type="text" id="f-site-custom" class="inp" placeholder="Saisir l'adresse complète..." style="display:none;margin-top:-2px">
     <div style="margin-top:10px">
-      <label class="lbl">\u00C9quipement concern\u00e9 (optionnel)</label>
-      <input type="text" id="f-equip" class="inp" placeholder="Ex: Portail coulissant FADINI \u2014 carte ELPRO 63">
+      <label class="lbl">Équipement concerné (optionnel)</label>
+      <input type="text" id="f-equip" class="inp" placeholder="Ex: Portail coulissant FADINI — carte ELPRO 63">
     </div>
   </div>
   <div class="card">
-    <div class="stitle"><span class="stitle-txt">\u00C9quipe (optionnel)</span></div>
-    <div style="font-size:13px;color:#6b7a96;margin-bottom:14px;line-height:1.5">Si rien n'est s\u00e9lectionn\u00e9, le champ n'appara\u00eet pas dans le rapport.</div>
+    <div class="stitle"><span class="stitle-txt">Équipe (optionnel)</span></div>
+    <div style="font-size:13px;color:#6b7a96;margin-bottom:14px;line-height:1.5">Si rien n'est sélectionné, le champ n'apparaît pas dans le rapport.</div>
     <label class="lbl">Chef de chantier</label>
     <div id="chef-list"></div>
     <div class="divider"></div>
-    <label class="lbl">Technicien(s) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:12px">(s\u00e9lection multiple)</span></label>
+    <label class="lbl">Technicien(s) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:12px">(sélection multiple)</span></label>
     <div id="tech-list"></div>
   </div>
   <div class="card">
     <div class="stitle"><span class="stitle-txt">Description pour l'IA</span></div>
-    <div style="font-size:13px;color:#6b7a96;margin-bottom:12px;line-height:1.6">D\u00e9cris l'intervention \u2014 l'IA g\u00e9n\u00e8re le rapport complet au format MP2I. Utilise \U0001F399 pour dicter.</div>
+    <div style="font-size:13px;color:#6b7a96;margin-bottom:12px;line-height:1.6">Décris l'intervention — l'IA génère le rapport complet au format MP2I. Utilise 🎙 pour dicter.</div>
     <div style="display:flex;gap:10px;align-items:flex-start">
-      <textarea id="f-desc" class="inp" placeholder="Ex: Portail coulissant FADINI ne fermait plus. Diagnostic : fin de course droite HS. Remplacement effectu\u00e9, test OK."></textarea>
-      <button id="btn-mic" style="background:#111520;border:1.5px solid #252f42;border-radius:10px;padding:12px;cursor:pointer;font-size:24px;flex-shrink:0;min-width:52px;min-height:52px;color:#6b7a96;-webkit-appearance:none" type="button">\U0001F399</button>
+      <textarea id="f-desc" class="inp" placeholder="Ex: Portail coulissant FADINI ne fermait plus. Diagnostic : fin de course droite HS. Remplacement effectué, test OK."></textarea>
+      <button id="btn-mic" style="background:#111520;border:1.5px solid #252f42;border-radius:10px;padding:12px;cursor:pointer;font-size:24px;flex-shrink:0;min-width:52px;min-height:52px;color:#6b7a96;-webkit-appearance:none" type="button">🎙</button>
     </div>
-    <div id="mic-on" style="display:none;font-size:12px;color:#ef4444;margin-top:8px">\u25CF En \u00e9coute... parle maintenant</div>
+    <div id="mic-on" style="display:none;font-size:12px;color:#ef4444;margin-top:8px">● En écoute... parle maintenant</div>
     <div id="f-wordcount" style="display:none;font-size:12px;color:#22c55e;margin-top:6px"></div>
   </div>
   <div class="card">
-    <div class="stitle"><span class="stitle-txt" id="photos-title">Photos \u2014 0/20</span></div>
-    <div style="font-size:13px;color:#6b7a96;margin-bottom:12px">Jusqu'\u00e0 20 photos annex\u00e9es au rapport.</div>
+    <div class="stitle"><span class="stitle-txt" id="photos-title">Photos — 0/20</span></div>
+    <div style="font-size:13px;color:#6b7a96;margin-bottom:12px">Jusqu'à 20 photos annexées au rapport.</div>
     <div class="pgrid" id="photo-grid"></div>
     <input type="file" id="photo-file" accept="image/*" multiple style="display:none">
   </div>
@@ -245,13 +245,13 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
   <div id="form-loading" style="display:none" class="card">
     <div class="spinner-wrap">
       <div class="spinner"></div>
-      <div style="font-size:17px;font-weight:700;margin-bottom:4px">L'IA r\u00e9dige le rapport...</div>
+      <div style="font-size:17px;font-weight:700;margin-bottom:4px">L'IA rédige le rapport...</div>
       <div style="font-size:13px;color:#6b7a96">Format MP2I professionnel</div>
       <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
   </div>
-  <button class="btn btn-primary" id="btn-generate" style="font-size:17px;padding:18px" type="button">\U0001F916 G\u00C9N\u00C9RER LE RAPPORT IA</button>
-  <button class="btn btn-ghost" id="btn-form-cancel" type="button">\u2715 Annuler</button>
+  <button class="btn btn-primary" id="btn-generate" style="font-size:17px;padding:18px" type="button">🤖 GÉNÉRER LE RAPPORT IA</button>
+  <button class="btn btn-ghost" id="btn-form-cancel" type="button">✕ Annuler</button>
   <div style="height:14px"></div>
 </div>
 </div>
@@ -260,12 +260,12 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <div class="screen" id="screen-review">
 <div class="body">
   <div style="text-align:center;padding:12px 0">
-    <div style="font-size:54px;margin-bottom:10px">\u2705</div>
-    <div style="font-size:22px;font-weight:800">Rapport g\u00e9n\u00e9r\u00e9 !</div>
+    <div style="font-size:54px;margin-bottom:10px">✅</div>
+    <div style="font-size:22px;font-weight:800">Rapport généré !</div>
     <div id="review-meta" style="font-size:12px;color:#6b7a96;margin-top:5px"></div>
   </div>
   <div class="card">
-    <div class="stitle"><span class="stitle-txt">\u00C9tat apr\u00e8s intervention</span></div>
+    <div class="stitle"><span class="stitle-txt">État après intervention</span></div>
     <div class="etat-grid" id="review-etat"></div>
   </div>
   <div class="card" id="review-photos" style="display:none">
@@ -273,33 +273,33 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
     <div class="pgrid" id="review-photos-grid"></div>
   </div>
   <div class="card" id="review-mat-card" style="display:none;background:linear-gradient(135deg,#0d1f10,#0a1a0d);border-color:#1a3d20">
-    <div class="stitle"><span class="stitle-txt" style="color:#4ade80">\U0001F527 Mat\u00e9riaux \u00e0 commander</span></div>
+    <div class="stitle"><span class="stitle-txt" style="color:#4ade80">🔧 Matériaux à commander</span></div>
     <div style="font-size:12px;color:#4ade80;margin-bottom:12px;background:rgba(34,197,94,.08);border-radius:8px;padding:9px 12px">
-      \U0001F512 <strong>Usage interne MP2I uniquement</strong> \u2014 Non transmis au client.
+      🔒 <strong>Usage interne MP2I uniquement</strong> — Non transmis au client.
     </div>
     <div id="review-mat-list" style="margin-bottom:10px"></div>
     <div style="display:flex;gap:8px;margin-bottom:10px">
-      <input type="text" id="rev-mat-ref" class="inp" placeholder="R\u00e9f\u00e9rence" style="flex:2;font-size:14px">
-      <input type="text" id="rev-mat-qty" class="inp" placeholder="Qt\u00e9" style="flex:0 0 60px;font-size:14px;text-align:center">
+      <input type="text" id="rev-mat-ref" class="inp" placeholder="Référence" style="flex:2;font-size:14px">
+      <input type="text" id="rev-mat-qty" class="inp" placeholder="Qté" style="flex:0 0 60px;font-size:14px;text-align:center">
       <button class="btn btn-success btn-sm" id="btn-rev-mat-add" type="button" style="width:auto;flex-shrink:0">+</button>
     </div>
     <textarea id="rev-mat-notes" class="inp" placeholder="Notes pour le devis..." style="min-height:60px;font-size:14px"></textarea>
   </div>
   <div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <label class="lbl" style="margin:0">Rapport g\u00e9n\u00e9r\u00e9</label>
-      <button id="btn-rev-edit" style="background:transparent;border:1px solid #252f42;border-radius:8px;color:#6b7a96;font-size:13px;font-weight:700;padding:6px 14px;cursor:pointer;-webkit-appearance:none" type="button">\u270F\uFE0F Modifier</button>
+      <label class="lbl" style="margin:0">Rapport généré</label>
+      <button id="btn-rev-edit" style="background:transparent;border:1px solid #252f42;border-radius:8px;color:#6b7a96;font-size:13px;font-weight:700;padding:6px 14px;cursor:pointer;-webkit-appearance:none" type="button">✏️ Modifier</button>
     </div>
     <div class="rbox" id="review-rbox"></div>
     <textarea class="redit" id="review-ta" style="display:none"></textarea>
   </div>
   <div class="row2">
-    <button class="btn btn-ghost btn-sm" id="btn-rev-copy" type="button">\U0001F4CB Copier</button>
-    <button class="btn btn-success" id="btn-rev-save" type="button">\U0001F4BE Sauvegarder</button>
+    <button class="btn btn-ghost btn-sm" id="btn-rev-copy" type="button">📋 Copier</button>
+    <button class="btn btn-success" id="btn-rev-save" type="button">💾 Sauvegarder</button>
   </div>
   <div class="row2">
-    <button class="btn btn-ghost btn-sm" id="btn-rev-pdf" type="button">\U0001F4C4 PDF</button>
-    <button class="btn btn-ghost btn-sm" id="btn-rev-word" type="button">\U0001F4DD Word</button>
+    <button class="btn btn-ghost btn-sm" id="btn-rev-pdf" type="button">📄 PDF</button>
+    <button class="btn btn-ghost btn-sm" id="btn-rev-word" type="button">📝 Word</button>
   </div>
   <button class="btn btn-ghost" id="btn-rev-new" type="button">+ Nouveau rapport</button>
   <div style="height:14px"></div>
@@ -309,7 +309,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <!-- LIST -->
 <div class="screen" id="screen-list">
 <div class="body">
-  <input type="search" id="search-inp" class="inp" placeholder="\U0001F50D  Rechercher...">
+  <input type="search" id="search-inp" class="inp" placeholder="🔍  Rechercher...">
   <div id="list-content"></div>
   <button class="btn btn-primary" id="btn-list-new" type="button">+ Nouveau rapport</button>
   <div style="height:14px"></div>
@@ -325,49 +325,49 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
     <div class="pgrid" id="detail-photos-grid"></div>
   </div>
   <div class="card">
-    <div class="stitle"><span class="stitle-txt">\u00C9tat</span></div>
+    <div class="stitle"><span class="stitle-txt">État</span></div>
     <div class="etat-grid" id="detail-etat"></div>
-    <button class="btn btn-success btn-sm" id="btn-det-etat-save" style="display:none;margin-top:10px" type="button">\U0001F4BE Sauvegarder l'\u00e9tat</button>
+    <button class="btn btn-success btn-sm" id="btn-det-etat-save" style="display:none;margin-top:10px" type="button">💾 Sauvegarder l'état</button>
   </div>
   <div class="card" id="det-mat-card" style="display:none;background:linear-gradient(135deg,#0d1f10,#0a1a0d);border-color:#1a3d20">
-    <div class="stitle"><span class="stitle-txt" style="color:#4ade80">\U0001F527 Mat\u00e9riaux \u00e0 commander</span></div>
+    <div class="stitle"><span class="stitle-txt" style="color:#4ade80">🔧 Matériaux à commander</span></div>
     <div style="font-size:12px;color:#4ade80;margin-bottom:12px;background:rgba(34,197,94,.08);border-radius:8px;padding:9px 12px">
-      \U0001F512 <strong>Usage interne MP2I</strong> \u2014 Non transmis au client.
+      🔒 <strong>Usage interne MP2I</strong> — Non transmis au client.
     </div>
     <div id="det-mat-list" style="margin-bottom:10px"></div>
     <div style="display:flex;gap:8px;margin-bottom:10px">
-      <input type="text" id="det-mat-ref" class="inp" placeholder="R\u00e9f\u00e9rence" style="flex:2;font-size:14px">
-      <input type="text" id="det-mat-qty" class="inp" placeholder="Qt\u00e9" style="flex:0 0 60px;font-size:14px;text-align:center">
+      <input type="text" id="det-mat-ref" class="inp" placeholder="Référence" style="flex:2;font-size:14px">
+      <input type="text" id="det-mat-qty" class="inp" placeholder="Qté" style="flex:0 0 60px;font-size:14px;text-align:center">
       <button class="btn btn-success btn-sm" id="btn-det-mat-add" type="button" style="width:auto;flex-shrink:0">+</button>
     </div>
     <textarea id="det-mat-notes" class="inp" placeholder="Notes pour le devis..." style="min-height:60px;font-size:14px;margin-bottom:10px"></textarea>
     <div class="row2">
-      <button class="btn btn-ghost btn-sm" id="btn-det-mat-save" type="button" style="color:#4ade80;border-color:#1a3d20">\U0001F4BE Sauvegarder</button>
-      <button class="btn btn-ghost btn-sm" id="btn-det-mat-copy" type="button" style="color:#f5a623;border-color:#2d1f0e">\U0001F4CB Copier devis</button>
+      <button class="btn btn-ghost btn-sm" id="btn-det-mat-save" type="button" style="color:#4ade80;border-color:#1a3d20">💾 Sauvegarder</button>
+      <button class="btn btn-ghost btn-sm" id="btn-det-mat-copy" type="button" style="color:#f5a623;border-color:#2d1f0e">📋 Copier devis</button>
     </div>
   </div>
   <div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <label class="lbl" style="margin:0">Texte du rapport</label>
-      <button id="btn-det-edit" style="background:transparent;border:1px solid #252f42;border-radius:8px;color:#6b7a96;font-size:13px;font-weight:700;padding:6px 14px;cursor:pointer;-webkit-appearance:none" type="button">\u270F\uFE0F Modifier</button>
+      <button id="btn-det-edit" style="background:transparent;border:1px solid #252f42;border-radius:8px;color:#6b7a96;font-size:13px;font-weight:700;padding:6px 14px;cursor:pointer;-webkit-appearance:none" type="button">✏️ Modifier</button>
     </div>
     <div class="rbox" id="detail-rbox"></div>
     <textarea class="redit" id="detail-ta" style="display:none"></textarea>
-    <button class="btn btn-success" id="btn-det-txt-save" style="display:none;margin-top:10px" type="button">\U0001F4BE Sauvegarder le texte</button>
+    <button class="btn btn-success" id="btn-det-txt-save" style="display:none;margin-top:10px" type="button">💾 Sauvegarder le texte</button>
   </div>
-  <button class="btn btn-primary" id="btn-det-copy" style="font-size:17px;padding:17px" type="button">\U0001F4CB COPIER LE RAPPORT</button>
+  <button class="btn btn-primary" id="btn-det-copy" style="font-size:17px;padding:17px" type="button">📋 COPIER LE RAPPORT</button>
   <div class="row2">
-    <button class="btn btn-ghost btn-sm" id="btn-det-pdf" type="button">\U0001F4C4 Export PDF</button>
-    <button class="btn btn-ghost btn-sm" id="btn-det-word" type="button">\U0001F4DD Export Word</button>
+    <button class="btn btn-ghost btn-sm" id="btn-det-pdf" type="button">📄 Export PDF</button>
+    <button class="btn btn-ghost btn-sm" id="btn-det-word" type="button">📝 Export Word</button>
   </div>
   <div id="mgr-treat-zone" style="display:none">
-    <div class="mgr-banner" style="margin-bottom:10px">\U0001F6E1\uFE0F Mode Responsable</div>
-    <button class="btn btn-success" id="btn-treat" type="button">\u2705 Marquer comme trait\u00e9</button>
-    <button class="btn btn-ghost btn-sm" id="btn-untreat" style="display:none;margin-top:8px" type="button">\u21A9 Annuler traitement</button>
+    <div class="mgr-banner" style="margin-bottom:10px">🛡️ Mode Responsable</div>
+    <button class="btn btn-success" id="btn-treat" type="button">✅ Marquer comme traité</button>
+    <button class="btn btn-ghost btn-sm" id="btn-untreat" style="display:none;margin-top:8px" type="button">↩ Annuler traitement</button>
   </div>
   <div class="row2">
-    <button class="btn btn-ghost" id="btn-det-back" type="button">\u2190 Retour</button>
-    <button class="btn btn-danger" id="btn-det-delete" type="button">\U0001F5D1 Supprimer</button>
+    <button class="btn btn-ghost" id="btn-det-back" type="button">← Retour</button>
+    <button class="btn btn-danger" id="btn-det-delete" type="button">🗑 Supprimer</button>
   </div>
   <div style="height:14px"></div>
 </div>
@@ -376,16 +376,16 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <!-- SETTINGS -->
 <div class="screen" id="screen-settings">
 <div class="body">
-  <div id="mgr-sett-banner" style="display:none" class="mgr-banner">\U0001F6E1\uFE0F Mode Responsable actif</div>
+  <div id="mgr-sett-banner" style="display:none" class="mgr-banner">🛡️ Mode Responsable actif</div>
   <div class="card" style="background:linear-gradient(135deg,#131520,#1a1f35);border-color:#252f52;padding:20px">
-    <div style="font-size:18px;font-weight:800;margin-bottom:4px">Param\u00e8tres</div>
-    <div style="font-size:13px;color:#6b7a96">\u00C9quipe, clients, application</div>
+    <div style="font-size:18px;font-weight:800;margin-bottom:4px">Paramètres</div>
+    <div style="font-size:13px;color:#6b7a96">Équipe, clients, application</div>
   </div>
-  <div class="setting-row" id="set-personnel"><span style="font-size:22px">\U0001F477</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Personnel</div><div style="font-size:12px;color:#6b7a96" id="sub-personnel"></div></div><span style="color:#6b7a96;font-size:18px">\u203A</span></div>
-  <div class="setting-row" id="set-clients"><span style="font-size:22px">\U0001F3E2</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Clients & March\u00e9s</div><div style="font-size:12px;color:#6b7a96" id="sub-clients"></div></div><span style="color:#6b7a96;font-size:18px">\u203A</span></div>
-  <div class="setting-row" id="set-mgr"><span style="font-size:22px">\U0001F6E1\uFE0F</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Mode Responsable</div><div style="font-size:12px;color:#6b7a96" id="sub-mgr"></div></div><span style="color:#6b7a96;font-size:18px">\u203A</span></div>
-  <div class="setting-row" id="set-key"><span style="font-size:22px">\U0001F511</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Cl\u00e9 API</div><div style="font-size:12px;color:#6b7a96" id="sub-key"></div></div><span style="color:#6b7a96;font-size:18px">\u203A</span></div>
-  <div class="setting-row" id="set-sync"><span style="font-size:22px">\U0001F504</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Forcer la synchronisation</div><div style="font-size:12px;color:#6b7a96">Pousser les donn\u00e9es locales vers Firebase</div></div><span style="color:#6b7a96;font-size:18px">\u203A</span></div>
+  <div class="setting-row" id="set-personnel"><span style="font-size:22px">👷</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Personnel</div><div style="font-size:12px;color:#6b7a96" id="sub-personnel"></div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
+  <div class="setting-row" id="set-clients"><span style="font-size:22px">🏢</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Clients & Marchés</div><div style="font-size:12px;color:#6b7a96" id="sub-clients"></div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
+  <div class="setting-row" id="set-mgr"><span style="font-size:22px">🛡️</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Mode Responsable</div><div style="font-size:12px;color:#6b7a96" id="sub-mgr"></div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
+  <div class="setting-row" id="set-key"><span style="font-size:22px">🔑</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Clé API</div><div style="font-size:12px;color:#6b7a96" id="sub-key"></div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
+  <div class="setting-row" id="set-sync"><span style="font-size:22px">🔄</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Forcer la synchronisation</div><div style="font-size:12px;color:#6b7a96">Pousser les données locales vers Firebase</div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
   <div class="card" style="font-size:13px;color:#6b7a96;line-height:1.8" id="sett-info"></div>
   <div style="height:14px"></div>
 </div>
@@ -394,12 +394,12 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <!-- PERSONNEL -->
 <div class="screen" id="screen-personnel">
 <div class="body">
-  <div class="card" style="font-size:13px;color:#6b7a96;line-height:1.6">Chaque personne peut \u00eatre s\u00e9lectionn\u00e9e comme <strong style="color:#dde3f0">technicien</strong> ou <strong style="color:#dde3f0">chef de chantier</strong>.</div>
+  <div class="card" style="font-size:13px;color:#6b7a96;line-height:1.6">Chaque personne peut être sélectionnée comme <strong style="color:#dde3f0">technicien</strong> ou <strong style="color:#dde3f0">chef de chantier</strong>.</div>
   <div id="pers-list"></div>
   <div class="card">
     <div class="stitle"><span class="stitle-txt">Ajouter</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-      <div><label class="lbl">Pr\u00e9nom</label><input type="text" id="pers-prenom" class="inp" placeholder="Mohamed"></div>
+      <div><label class="lbl">Prénom</label><input type="text" id="pers-prenom" class="inp" placeholder="Mohamed"></div>
       <div><label class="lbl">Nom</label><input type="text" id="pers-nom" class="inp" placeholder="Aloui"></div>
     </div>
     <button class="btn btn-primary" id="btn-pers-add" type="button">+ Ajouter</button>
@@ -423,7 +423,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
   <div class="card">
     <div class="stitle"><span class="stitle-txt">Informations</span></div>
     <div style="margin-bottom:12px"><label class="lbl">Nom *</label><input type="text" id="ce-nom" class="inp" placeholder="Ex: Mairie de Vincennes"></div>
-    <div><label class="lbl">N\u00b0 March\u00e9 (optionnel)</label><input type="text" id="ce-marche" class="inp" placeholder="Ex: 2026-010-AO"></div>
+    <div><label class="lbl">N° Marché (optionnel)</label><input type="text" id="ce-marche" class="inp" placeholder="Ex: 2026-010-AO"></div>
   </div>
   <div class="card">
     <div class="stitle"><span class="stitle-txt">Sites / Adresses</span></div>
@@ -435,9 +435,9 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
   </div>
   <div class="row2">
     <button class="btn btn-ghost" id="btn-ce-cancel" type="button">Annuler</button>
-    <button class="btn btn-success" id="btn-ce-save" type="button">\U0001F4BE Sauvegarder</button>
+    <button class="btn btn-success" id="btn-ce-save" type="button">💾 Sauvegarder</button>
   </div>
-  <button class="btn btn-danger" id="btn-ce-del" style="display:none" type="button">\U0001F5D1 Supprimer ce client</button>
+  <button class="btn btn-danger" id="btn-ce-del" style="display:none" type="button">🗑 Supprimer ce client</button>
   <div style="height:14px"></div>
 </div>
 </div>
@@ -650,24 +650,22 @@ function showSyncBadge(){
 
 function syncFromFirestore(){
   return fsGetAll("rapports").then(function(docs){
-    if(docs.length===0&&rapports.length>0){
-      fbSaveAllRapports(rapports);
-      return;
+    // Always merge: union of Firebase docs and local
+    var fbNums=docs.map(function(r){return r.numero}).filter(Boolean);
+    var localOnly=rapports.filter(function(r){return r&&r.numero&&fbNums.indexOf(r.numero)<0});
+    if(localOnly.length>0){
+      console.log("Pushing",localOnly.length,"local rapports to Firebase");
+      fbSaveAllRapports(localOnly);
     }
-    if(docs.length>0){
-      docs.sort(function(a,b){return(b.savedAt||b.date||"").localeCompare(a.savedAt||a.date||"")});
-      if(docs.length>=rapports.length){rapports=docs;}
-      else{
-        var fbNums=docs.map(function(r){return r.numero});
-        var localOnly=rapports.filter(function(r){return fbNums.indexOf(r.numero)<0});
-        if(localOnly.length>0)fbSaveAllRapports(localOnly);
-        rapports=docs.concat(localOnly);
-        rapports.sort(function(a,b){return(b.savedAt||b.date||"").localeCompare(a.savedAt||a.date||"")});
-      }
+    var all=docs.concat(localOnly);
+    if(all.length>0){
+      all.sort(function(a,b){return(b.savedAt||b.date||"").localeCompare(a.savedAt||a.date||"")});
+      rapports=all;
       lsSet(K.r,rapports);
       if(screen==="dash")refreshDash();
       else if(screen==="list")renderList(document.getElementById("search-inp").value||"");
       showSyncBadge();
+      console.log("Sync done:",rapports.length,"rapports total");
     }
     return Promise.all([fsGetOne("config","clients"),fsGetOne("config","personnel")]);
   }).then(function(results){
