@@ -583,10 +583,27 @@ function fromFV(v){
 function fromDoc(d){if(!d||!d.fields)return null;var o={};Object.keys(d.fields).forEach(function(k){o[k]=fromFV(d.fields[k])});return o;}
 
 function fsGetAll(col){
-  return fetch(FB_BASE+"/"+col+"?key="+FB_KEY+"&pageSize=1000")
-    .then(function(r){return r.ok?r.json():{documents:[]}})
-    .then(function(d){return(d.documents||[]).map(fromDoc).filter(Boolean)})
-    .catch(function(){return[]});
+  // Build URL with field mask for "rapports" to EXCLUDE photoPreviews
+  // (saves bandwidth, prevents timeout when there are many photos)
+  var url = FB_BASE+"/"+col+"?key="+FB_KEY+"&pageSize=1000";
+  if(col === "rapports"){
+    var fields = ["numero","date","type","client","site","equipement","marche","clientId",
+                  "chef","chefId","techniciens","techIds","etatIdx","texte","descSource",
+                  "savedAt","photoCount","treatedByManager","treatedAt","materiaux",
+                  "materiauxNotes","deviceId","updatedAt"];
+    fields.forEach(function(f){url += "&mask.fieldPaths=" + f;});
+  }
+  return fetch(url)
+    .then(function(r){
+      if(!r.ok){console.error("fsGetAll status:",r.status);return{documents:[]}}
+      return r.json();
+    })
+    .then(function(d){
+      var docs = (d.documents||[]).map(fromDoc).filter(Boolean);
+      console.log("fsGetAll("+col+"): retrieved "+docs.length+" documents");
+      return docs;
+    })
+    .catch(function(e){console.error("fsGetAll error:",e);return[]});
 }
 function fsSet(col,id,obj){
   var f={};Object.keys(obj).forEach(function(k){f[k]=toFV(obj[k])});
@@ -650,8 +667,19 @@ function showSyncBadge(){
 
 function syncFromFirestore(){
   return fsGetAll("rapports").then(function(docs){
-    // Always merge: union of Firebase docs and local
     var fbNums=docs.map(function(r){return r.numero}).filter(Boolean);
+    var localByNum={};
+    rapports.forEach(function(r){if(r&&r.numero)localByNum[r.numero]=r;});
+    
+    // Merge each FB doc with local photoPreviews if available
+    docs.forEach(function(d){
+      var local=localByNum[d.numero];
+      if(local&&local.photoPreviews&&local.photoPreviews.length>0&&(!d.photoPreviews||d.photoPreviews.length===0)){
+        d.photoPreviews=local.photoPreviews;
+      }
+    });
+    
+    // Local rapports not yet in Firebase
     var localOnly=rapports.filter(function(r){return r&&r.numero&&fbNums.indexOf(r.numero)<0});
     if(localOnly.length>0){
       console.log("Pushing",localOnly.length,"local rapports to Firebase");
@@ -665,7 +693,9 @@ function syncFromFirestore(){
       if(screen==="dash")refreshDash();
       else if(screen==="list")renderList(document.getElementById("search-inp").value||"");
       showSyncBadge();
-      console.log("Sync done:",rapports.length,"rapports total");
+      console.log("Sync OK:",rapports.length,"rapports total");
+    } else {
+      console.log("Sync: no documents found in Firebase and no local data");
     }
     return Promise.all([fsGetOne("config","clients"),fsGetOne("config","personnel")]);
   }).then(function(results){
@@ -1136,6 +1166,26 @@ function openDetail(num){
   var r=rapports.find(function(x){return x.numero===num});
   if(!r){toast("Rapport introuvable","error");return;}
   selR=r;
+  // Lazy-load photos if needed
+  if(r.photoCount>0 && (!r.photoPreviews || r.photoPreviews.length===0)){
+    fsGetOne("rapports", num).then(function(full){
+      if(full && full.photoPreviews && full.photoPreviews.length>0){
+        var idx=rapports.findIndex(function(x){return x.numero===num});
+        if(idx>=0){
+          rapports[idx].photoPreviews=full.photoPreviews;
+          selR=rapports[idx];
+          lsSet(K.r,rapports);
+        }
+        // Refresh photos in detail view
+        if(screen==="detail"){
+          var pc=document.getElementById("detail-photos-card");
+          pc.style.display="block";
+          document.getElementById("detail-photos-title").textContent="Photos — "+full.photoPreviews.length;
+          document.getElementById("detail-photos-grid").innerHTML=full.photoPreviews.map(function(s){return "<div class=\"pthumb\"><img src=\""+s+"\" alt=\"\"></div>";}).join("");
+        }
+      }
+    }).catch(function(e){console.log("Photo lazy-load failed:",e)});
+  }
   detEdit=false;
   detEtat=r.etatIdx||0;
   detMat=r.materiaux?r.materiaux.slice():[];
