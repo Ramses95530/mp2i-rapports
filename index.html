@@ -594,12 +594,15 @@ function startSync() {
   // 1. Listen to rapports
   if (syncUnsubscribe) syncUnsubscribe();
   syncUnsubscribe = db.collection("rapports")
-    .orderBy("savedAt", "desc")
     .onSnapshot(function(snapshot) {
       var updated = [];
       snapshot.forEach(function(doc) { 
         var d = doc.data();
         if (d && d.numero) updated.push(d);
+      });
+      // Sort by savedAt descending (client-side — no Firestore index needed)
+      updated.sort(function(a,b){
+        return (b.savedAt||b.date||'').localeCompare(a.savedAt||a.date||'');
       });
       // NEVER overwrite local data with empty Firebase
       // If Firebase is empty but we have local data, push local to Firebase
