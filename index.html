@@ -503,8 +503,7 @@ function initFirebase() {
       fbApp = firebase.initializeApp(FIREBASE_CONFIG);
     }
     db = firebase.firestore();
-    db.enablePersistence({ synchronizeTabs: true })
-      .catch(function(e) { console.log("Persistence:", e.code); });
+    // Persistence disabled — causes issues when switching domains
     fbReady = true;
     console.log("Firebase ready ✓");
   } catch(e) {
@@ -593,6 +592,26 @@ function startSync() {
   
   // 1. Listen to rapports
   if (syncUnsubscribe) syncUnsubscribe();
+  // First: direct GET to immediately show data
+  db.collection("rapports").get().then(function(snapshot) {
+    var updated = [];
+    snapshot.forEach(function(doc) {
+      var d = doc.data();
+      if (d && d.numero) updated.push(d);
+    });
+    if (updated.length > 0) {
+      updated.sort(function(a,b){
+        return (b.savedAt||b.date||'').localeCompare(a.savedAt||a.date||'');
+      });
+      rapports = updated;
+      lsSet(K.r, rapports);
+      refreshDash();
+      showSyncBadge();
+      console.log("Loaded", rapports.length, "rapports via GET");
+    }
+  }).catch(function(e){ console.error("GET error:", e); });
+
+  // Then: real-time listener for updates
   syncUnsubscribe = db.collection("rapports")
     .onSnapshot(function(snapshot) {
       var updated = [];
