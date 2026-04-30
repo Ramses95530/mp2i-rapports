@@ -656,7 +656,7 @@ function refreshDash(){
     var e=ETATS[r.etatIdx||0];
     var typeInfo=TYPES.find(function(t){return t.id===r.type})||TYPES[3];
     var statusDot=isManagerMode?(r.treatedByManager?'<div class="status-dot status-treated" title="Traité"></div>':'<div class="status-dot status-submitted" title="Non traité"></div>'):'<div class="r-dot" style="background:'+e.c+';box-shadow:0 0 7px '+e.c+'88"></div>';
-    html+='<div class="r-item" data-num="'+esc(r.numero)+'" onclick="openDetail(this.dataset.num)" style="display:flex;align-items:center;gap:11px">';
+    html+='<div class="r-item" data-num="'+esc(r.numero)+'" onclick="openDetail(this.dataset.num)" style="display:flex;align-items:center;gap:11px">'
       +statusDot
       +'<div style="flex:1;min-width:0"><div style="font-family:Syne,sans-serif;font-weight:700;font-size:13px">'+esc(r.numero)+'</div>'
       +'<div style="font-size:11px;color:var(--mt);margin-top:2px">'+typeInfo.icon+' '+fmtD(r.date)+' · '+esc(r.client)+'</div></div>'
@@ -671,7 +671,7 @@ function renderTypeGrid(containerId,mode){
   var el=document.getElementById(containerId);
   if(!el)return;
   el.innerHTML=TYPES.map(function(t){
-    return'<div class="type-card" onclick="selectType(\''+t.id+'\',\''+mode+'\')">'
+    return'<div class="type-card" data-tid="'+t.id+'" data-mode="'+mode+'" onclick="selectType(this.dataset.tid,this.dataset.mode)">'
       +'<div class="type-icon">'+t.icon+'</div>'
       +'<div class="type-lbl">'+t.label+'</div>'
       +'<div class="type-sub">'+t.sub+'</div>'
@@ -860,10 +860,10 @@ function renderPersonnelPickers(){
     +'<div class="chef-dot"></div><div><div class="chip-name" style="color:var(--mt)">Aucun chef de chantier</div></div></div>';
   personnel.forEach(function(p){
     var sel=formSelChef===p.id;
-    chefHtml+='<div class="chef-chip"'+(sel?' data-selected="true"':'')+' data-id="'+p.id+'" onclick="selectChef(this.dataset.id)">';
-    chefHtml+='<div class="chef-dot"></div>';
-    chefHtml+='<div><div class="chip-name">'+esc(p.prenom)+" "+esc(p.nom)+'</div></div>';
-    chefHtml+='</div>';
+    chefHtml+='<div class="chef-chip'+(sel?" selected":"")+'" data-pid="'+p.id+'" onclick="selectChef(this.dataset.pid)">';
+      +'<div class="chef-dot"></div>'
+      +'<div><div class="chip-name">'+esc(p.prenom)+" "+esc(p.nom)+'</div></div>'
+      +'</div>';
   });
   chefEl.innerHTML=chefHtml;
   // Techs (multi)
@@ -871,9 +871,9 @@ function renderPersonnelPickers(){
   var techHtml='';
   personnel.forEach(function(p){
     var sel=formSelTechs.indexOf(p.id)>=0;
-    teHtml+='<div class="person-chip"'+(sel?' data-selected="true"':'')+' data-id="'+p.id+'" onclick="toggleTech(this.dataset.id)">';
-      teHtml+='<div class="chip-check">'+(sel?"✓":"")+"</div>";
-      teHtml+='<div class="chip-name">'+esc(p.prenom)+" "+esc(p.nom)+'</div></div>';
+    techHtml+='<div class="person-chip'+(sel?" selected":"")+'" data-pid="'+p.id+'" onclick="toggleTech(this.dataset.pid)">';
+      +'<div class="chip-check">'+(sel?"✓":"")+'</div>'
+      +'<div class="chip-name">'+esc(p.prenom)+" "+esc(p.nom)+'</div>'
       +'</div>';
   });
   techEl.innerHTML=techHtml||'<div style="font-size:12px;color:var(--mt)">Aucun technicien disponible.</div>';
@@ -957,7 +957,7 @@ function renderEtatPicker(cid,activeIdx,cb){
   var el=document.getElementById(cid);
   el.innerHTML=ETATS.map(function(e,i){
     var a=i===activeIdx;
-    return'<div class="etat-opt'+(a?" active":"")+'" style="'+(a?"background:"+e.bg+";border-color:"+e.c:"")+'" onclick="etatClick(\''+cid+'\','+i+')">'
+    return'<div class="etat-opt'+(a?" active":"")+'" style="'+(a?"background:"+e.bg+";border-color:"+e.c:"")+'" data-cid="'+containerId+'" data-idx="'+i+'" onclick="etatClick(this.dataset.cid,parseInt(this.dataset.idx))">'
       +'<span style="font-size:14px">'+e.i+'</span>'
       +'<span class="etat-lbl" style="'+(a?"color:"+e.c:"")+' ">'+e.l+'</span>'
       +'</div>';
@@ -1213,7 +1213,7 @@ function renderClientsList(){
   var el=document.getElementById("clients-list");
   if(!clients.length){el.innerHTML='<div class="card" style="font-size:13px;color:var(--mt);text-align:center">Aucun client.</div>';return}
   el.innerHTML=clients.map(function(c){
-    return'<div class="list-item-row" data-id="'+esc(c.id)+'" onclick="editClient(this.dataset.id)" style="cursor:pointer">'
+    return'<div class="list-item-row" data-cid="'+esc(c.id)+'" onclick="editClient(this.dataset.cid)" style="cursor:pointer">'
       +'<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🏢 '+esc(c.nom)+'</div>'
       +'<div style="font-size:11px;color:var(--mt)">'+(c.marche?"Marché : "+esc(c.marche)+" · ":"")+c.sites.length+" site(s)"+'</div></div>'
       +'<span style="color:var(--mt)">›</span>'
@@ -1665,181 +1665,166 @@ document.getElementById("btn-detail-docx").onclick = function(){ if(selectedRapp
 loadAll();
 
 // ═══════════════════════════════════════════════════════════════
-// FIRESTORE REST API - No SDK needed, works everywhere
+// FIRESTORE REST API — sync temps réel sans SDK
 // ═══════════════════════════════════════════════════════════════
 var FB_KEY = "AIzaSyAe4SPwV3e3sIy8N9kIYnPMyojmLPcCvgA";
 var FB_BASE = "https://firestore.googleapis.com/v1/projects/mp2i-rapports/databases/(default)/documents";
 var syncTimer = null;
-var managerPin = localStorage.getItem("mp2i_pin") || "4500";
-var isManagerMode = sessionStorage.getItem("mp2i_mgr") === "1";
 
-function getDeviceId() {
-  var id = localStorage.getItem("mp2i_device_id");
-  if (!id) { id = "dev_" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); localStorage.setItem("mp2i_device_id", id); }
+function getDeviceId(){
+  var id=localStorage.getItem("mp2i_device_id");
+  if(!id){id="dev_"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);localStorage.setItem("mp2i_device_id",id);}
   return id;
 }
 var DEVICE_ID = getDeviceId();
 
-function toFV(v) {
-  if (v === null || v === undefined) return {nullValue: null};
-  if (typeof v === "boolean") return {booleanValue: v};
-  if (typeof v === "number") return Number.isInteger(v) ? {integerValue: String(v)} : {doubleValue: v};
-  if (typeof v === "string") return {stringValue: v};
-  if (Array.isArray(v)) return {arrayValue: {values: v.map(toFV)}};
-  if (typeof v === "object") {
-    var f = {}; Object.keys(v).forEach(function(k) { f[k] = toFV(v[k]); }); return {mapValue: {fields: f}};
-  }
-  return {stringValue: String(v)};
+function toFV(v){
+  if(v===null||v===undefined)return{nullValue:null};
+  if(typeof v==="boolean")return{booleanValue:v};
+  if(typeof v==="number")return Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v};
+  if(typeof v==="string")return{stringValue:v};
+  if(Array.isArray(v))return{arrayValue:{values:v.map(toFV)}};
+  if(typeof v==="object"){var f={};Object.keys(v).forEach(function(k){f[k]=toFV(v[k])});return{mapValue:{fields:f}}}
+  return{stringValue:String(v)};
 }
-function fromFV(v) {
-  if (!v) return null;
-  if ("nullValue" in v) return null;
-  if ("booleanValue" in v) return v.booleanValue;
-  if ("integerValue" in v) return parseInt(v.integerValue);
-  if ("doubleValue" in v) return v.doubleValue;
-  if ("stringValue" in v) return v.stringValue;
-  if ("arrayValue" in v) return (v.arrayValue.values || []).map(fromFV);
-  if ("mapValue" in v) { var o = {}; Object.keys(v.mapValue.fields || {}).forEach(function(k) { o[k] = fromFV(v.mapValue.fields[k]); }); return o; }
+function fromFV(v){
+  if(!v)return null;
+  if("nullValue" in v)return null;
+  if("booleanValue" in v)return v.booleanValue;
+  if("integerValue" in v)return parseInt(v.integerValue);
+  if("doubleValue" in v)return v.doubleValue;
+  if("stringValue" in v)return v.stringValue;
+  if("arrayValue" in v)return(v.arrayValue.values||[]).map(fromFV);
+  if("mapValue" in v){var o={};Object.keys(v.mapValue.fields||{}).forEach(function(k){o[k]=fromFV(v.mapValue.fields[k])});return o;}
   return null;
 }
-function fromDoc(doc) {
-  if (!doc || !doc.fields) return null;
-  var o = {}; Object.keys(doc.fields).forEach(function(k) { o[k] = fromFV(doc.fields[k]); }); return o;
+function fromDoc(doc){if(!doc||!doc.fields)return null;var o={};Object.keys(doc.fields).forEach(function(k){o[k]=fromFV(doc.fields[k])});return o;}
+
+async function fsGetAll(col){
+  try{
+    var r=await fetch(FB_BASE+"/"+col+"?key="+FB_KEY+"&pageSize=1000");
+    if(!r.ok)return[];
+    var d=await r.json();
+    return(d.documents||[]).map(fromDoc).filter(Boolean);
+  }catch(e){return[]}
 }
-async function fsGetAll(col) {
-  try {
-    var r = await fetch(FB_BASE + "/" + col + "?key=" + FB_KEY + "&pageSize=1000");
-    if (!r.ok) return [];
-    var d = await r.json();
-    return (d.documents || []).map(fromDoc).filter(Boolean);
-  } catch(e) { return []; }
-}
-async function fsSet(col, id, obj) {
-  try {
-    var f = {}; Object.keys(obj).forEach(function(k) { f[k] = toFV(obj[k]); });
-    var r = await fetch(FB_BASE + "/" + col + "/" + encodeURIComponent(id) + "?key=" + FB_KEY, {
-      method: "PATCH", headers: {"Content-Type": "application/json"}, body: JSON.stringify({fields: f})
+async function fsSet(col,id,obj){
+  try{
+    var f={};Object.keys(obj).forEach(function(k){f[k]=toFV(obj[k])});
+    var r=await fetch(FB_BASE+"/"+col+"/"+encodeURIComponent(id)+"?key="+FB_KEY,{
+      method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:f})
     });
     return r.ok;
-  } catch(e) { return false; }
+  }catch(e){return false}
 }
-async function fsDel(col, id) {
-  try { await fetch(FB_BASE + "/" + col + "/" + encodeURIComponent(id) + "?key=" + FB_KEY, {method: "DELETE"}); } catch(e) {}
-}
-async function fsGetOne(col, id) {
-  try {
-    var r = await fetch(FB_BASE + "/" + col + "/" + encodeURIComponent(id) + "?key=" + FB_KEY);
-    if (!r.ok) return null;
+async function fsDel(col,id){try{await fetch(FB_BASE+"/"+col+"/"+encodeURIComponent(id)+"?key="+FB_KEY,{method:"DELETE"})}catch(e){}}
+async function fsGetOne(col,id){
+  try{
+    var r=await fetch(FB_BASE+"/"+col+"/"+encodeURIComponent(id)+"?key="+FB_KEY);
+    if(!r.ok)return null;
     return fromDoc(await r.json());
-  } catch(e) { return null; }
+  }catch(e){return null}
 }
 
-// Firebase operations
-async function fbSave(r) {
-  var fb = Object.assign({}, r, {deviceId: DEVICE_ID});
-  if (r.photoPreviews && r.photoPreviews.length > 0) {
-    var sm = [];
-    for (var i = 0; i < r.photoPreviews.length; i++) {
-      try { sm.push(await compressImg(r.photoPreviews[i], 480, 0.40)); } catch(e) { sm.push(r.photoPreviews[i]); }
+async function fbSave(r){
+  var fb=Object.assign({},r,{deviceId:DEVICE_ID});
+  if(r.photoPreviews&&r.photoPreviews.length>0){
+    var sm=[];
+    for(var i=0;i<r.photoPreviews.length;i++){
+      try{sm.push(await compressImg(r.photoPreviews[i],480,0.40))}
+      catch(e){sm.push(r.photoPreviews[i])}
     }
-    fb.photoPreviews = sm;
+    fb.photoPreviews=sm;
   }
-  await fsSet("rapports", r.numero, fb);
+  await fsSet("rapports",r.numero,fb);
 }
-async function fbSaveAll(list) { for (var i = 0; i < list.length; i++) await fbSave(list[i]); }
-async function fbDel(num) { await fsDel("rapports", num); }
+async function fbSaveAll(list){for(var i=0;i<list.length;i++)await fbSave(list[i])}
+async function fbDel(num){await fsDel("rapports",num)}
 
-function showSyncBadge() {
-  var el = document.getElementById("sync-badge");
-  if (el) { el.textContent = "🔄 " + rapports.length + " rapport(s) synchronisé(s)"; el.style.display = "block"; setTimeout(function() { el.style.display = "none"; }, 3000); }
+function showSyncBadge(){
+  var el=document.getElementById("sync-badge");
+  if(el){el.textContent="🔄 "+rapports.length+" rapport(s) synchronisé(s)";el.style.display="block";setTimeout(function(){el.style.display="none"},3000);}
 }
 
-async function syncFromFirestore() {
-  try {
-    var docs = await fsGetAll("rapports");
-    if (docs.length === 0 && rapports.length > 0) {
-      fbSaveAll(rapports); return;
-    }
-    if (docs.length > 0) {
-      docs.sort(function(a,b) { return (b.savedAt||b.date||"").localeCompare(a.savedAt||a.date||""); });
-      if (docs.length >= rapports.length) {
-        rapports = docs;
-      } else {
-        var fbNums = docs.map(function(r) { return r.numero; });
-        var localOnly = rapports.filter(function(r) { return fbNums.indexOf(r.numero) < 0; });
-        if (localOnly.length > 0) fbSaveAll(localOnly);
-        rapports = docs.concat(localOnly);
-        rapports.sort(function(a,b) { return (b.savedAt||b.date||"").localeCompare(a.savedAt||a.date||""); });
+async function syncFromFirestore(){
+  try{
+    var docs=await fsGetAll("rapports");
+    if(docs.length===0&&rapports.length>0){fbSaveAll(rapports);return;}
+    if(docs.length>0){
+      docs.sort(function(a,b){return(b.savedAt||b.date||"").localeCompare(a.savedAt||a.date||"")});
+      if(docs.length>=rapports.length){rapports=docs;}
+      else{
+        var fbNums=docs.map(function(r){return r.numero});
+        var localOnly=rapports.filter(function(r){return fbNums.indexOf(r.numero)<0});
+        if(localOnly.length>0)fbSaveAll(localOnly);
+        rapports=docs.concat(localOnly);
+        rapports.sort(function(a,b){return(b.savedAt||b.date||"").localeCompare(a.savedAt||a.date||"")});
       }
-      lsSet(KEYS.rap, rapports);
+      lsSet(KEYS.rap,rapports);
       refreshDash();
       showSyncBadge();
     }
-    // Sync config
-    var fc = await fsGetOne("config", "clients");
-    if (fc && fc.data && fc.data.length >= clients.length) { clients = fc.data; lsSet(KEYS.cli, clients); }
-    else if (clients.length > 0) { fsSet("config", "clients", {data: clients, updatedAt: new Date().toISOString()}); }
-    var fp = await fsGetOne("config", "personnel");
-    if (fp && fp.data && fp.data.length >= personnel.length) { personnel = fp.data; lsSet(KEYS.per, personnel); }
-    else if (personnel.length > 0) { fsSet("config", "personnel", {data: personnel, updatedAt: new Date().toISOString()}); }
-  } catch(e) { console.error("syncFromFirestore:", e); }
+    var fc=await fsGetOne("config","clients");
+    if(fc&&fc.data&&fc.data.length>=clients.length){clients=fc.data;lsSet(KEYS.cli,clients);}
+    else if(clients.length>0){fsSet("config","clients",{data:clients,updatedAt:new Date().toISOString()})}
+    var fp=await fsGetOne("config","personnel");
+    if(fp&&fp.data&&fp.data.length>=personnel.length){personnel=fp.data;lsSet(KEYS.per,personnel);}
+    else if(personnel.length>0){fsSet("config","personnel",{data:personnel,updatedAt:new Date().toISOString()})}
+  }catch(e){console.error("syncFromFirestore:",e)}
 }
 
-function startSync() {
+function startSync(){
   syncFromFirestore();
-  if (syncTimer) clearInterval(syncTimer);
-  syncTimer = setInterval(syncFromFirestore, 30000);
+  if(syncTimer)clearInterval(syncTimer);
+  syncTimer=setInterval(syncFromFirestore,30000);
 }
 
-// Patch saveAll to also sync Firebase
+// Patcher saveAll pour synchroniser Firebase
 var _origSaveAll = saveAll;
-saveAll = function() {
+saveAll = function(){
   _origSaveAll();
-  fsSet("config", "clients", {data: clients, updatedAt: new Date().toISOString()}).catch(function(){});
-  fsSet("config", "personnel", {data: personnel, updatedAt: new Date().toISOString()}).catch(function(){});
+  fsSet("config","clients",{data:clients,updatedAt:new Date().toISOString()}).catch(function(){});
+  fsSet("config","personnel",{data:personnel,updatedAt:new Date().toISOString()}).catch(function(){});
 };
 
-// Manager mode
-function activateManagerMode(pin) {
-  if (pin === managerPin) { isManagerMode = true; sessionStorage.setItem("mp2i_mgr", "1"); return true; }
-  if (pin === "CHANGEPIN") {
-    var np = (prompt("Nouveau PIN (min 4 chiffres) :") || "").trim();
-    if (np.length >= 4) { managerPin = np; localStorage.setItem("mp2i_pin", np); toast("PIN changé ✓", "success"); }
-    return false;
-  }
-  return false;
-}
-
-// Force sync button (in settings)
-function setupManagerBtn() {
-  var btn = document.getElementById("btn-manager-mode");
-  if (!btn) return;
-  btn.onclick = function() {
-    if (isManagerMode) {
-      isManagerMode = false; sessionStorage.removeItem("mp2i_mgr");
-      toast("Mode responsable désactivé", "info"); refreshDash(); return;
-    }
-    var p = (prompt("PIN responsable :") || "").trim();
-    if (!p) return;
-    if (activateManagerMode(p)) { toast("Mode responsable activé ✓", "success"); refreshDash(); }
-    else if (p !== "CHANGEPIN") { toast("PIN incorrect", "error"); }
+// Patcher saveRapport pour synchroniser
+if(typeof saveRapport==="function"){
+  var _origSaveRapport=saveRapport;
+  saveRapport=function(r){
+    _origSaveRapport(r);
+    fbSave(r).catch(function(){});
   };
 }
 
-// START
-if (apiKey) {
+// Patcher deleteRapport pour synchroniser
+if(typeof deleteRapport==="function"){
+  var _origDeleteRapport=deleteRapport;
+  deleteRapport=function(num){
+    _origDeleteRapport(num);
+    fbDel(num).catch(function(){});
+  };
+}
+
+// Sauvegarder tout rapport modifié sur Firebase
+// Hook sur l'enregistrement des rapports (review screen)
+function autoSyncOnSave(rapport){
+  if(rapport && rapport.numero) fbSave(rapport).catch(function(){});
+}
+
+if(apiKey){
   initDash();
   startSync();
-  setupManagerBtn();
 } else {
   showScreen("setup");
-  var _origSetup = document.getElementById("btn-setup-save").onclick;
-  document.getElementById("btn-setup-save").onclick = function() {
-    if (_origSetup) _origSetup.call(this);
-    if (localStorage.getItem(KEYS.api)) {
-      setTimeout(function() { startSync(); setupManagerBtn(); }, 300);
-    }
-  };
+  // Démarrer la sync après l'activation
+  var _btn=document.getElementById("btn-setup-save");
+  if(_btn){
+    var _origClick=_btn.onclick;
+    _btn.onclick=function(){
+      if(_origClick)_origClick.call(this);
+      if(localStorage.getItem(KEYS.api))setTimeout(startSync,500);
+    };
+  }
 }
 </script>
 </body>
