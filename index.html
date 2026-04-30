@@ -409,6 +409,9 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
   <div class="setting-row" id="btn-change-key"><span style="font-size:22px">🔑</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Clé API</div><div style="font-size:12px;color:#6b7a96" id="sett-key-sub">Configurée ✓</div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
   <div class="setting-row" id="btn-go-planning"><span style="font-size:22px">📅</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Planning</div><div style="font-size:12px;color:#6b7a96">Disponible prochainement</div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
   <div class="card" style="font-size:13px;color:#6b7a96;line-height:1.8" id="sett-info"></div>
+  <button class="btn btn-ghost btn-sm" id="btn-force-sync" type="button" style="color:#f5a623;border-color:#f5a62344;font-size:13px">
+    🔄 Forcer la synchronisation Firebase
+  </button>
   <div style="height:12px"></div>
 </div>
 </div>
@@ -594,14 +597,37 @@ function startSync() {
     .orderBy("savedAt", "desc")
     .onSnapshot(function(snapshot) {
       var updated = [];
-      snapshot.forEach(function(doc) { updated.push(doc.data()); });
-      rapports = updated;
-      lsSet(K.r, rapports);
+      snapshot.forEach(function(doc) { 
+        var d = doc.data();
+        if (d && d.numero) updated.push(d);
+      });
+      // NEVER overwrite local data with empty Firebase
+      // If Firebase is empty but we have local data, push local to Firebase
+      if (updated.length === 0 && rapports.length > 0) {
+        console.log("Firebase empty, pushing", rapports.length, "local rapports");
+        fbSaveAllRapports(rapports);
+        return; // Keep local data
+      }
+      // If Firebase has more or equal data, use Firebase
+      if (updated.length >= rapports.length) {
+        rapports = updated;
+        lsSet(K.r, rapports);
+      } else if (updated.length > 0) {
+        // Firebase has some data — merge: keep all unique by numero
+        var fbNums = updated.map(function(r){return r.numero});
+        var localOnly = rapports.filter(function(r){return fbNums.indexOf(r.numero) < 0});
+        rapports = updated.concat(localOnly);
+        rapports.sort(function(a,b){return (b.savedAt||'').localeCompare(a.savedAt||'')});
+        lsSet(K.r, rapports);
+        // Push local-only rapports to Firebase
+        if (localOnly.length > 0) fbSaveAllRapports(localOnly);
+      }
       if (screen === "dash") refreshDash();
       else if (screen === "list") renderList(document.getElementById("search-inp").value || "");
       showSyncBadge();
     }, function(err) {
       console.error("Sync rapports error:", err);
+      toast("Hors ligne — données locales affichées", "info");
     });
 
   // 2. Listen to config (clients + personnel) in real-time
@@ -2097,6 +2123,19 @@ window.etatClick = function(cid, i) {
   }
 };
 
+// Force sync button
+document.getElementById('btn-force-sync').onclick = function() {
+  if (!fbReady) { toast("Firebase non connecté", "error"); return; }
+  toast("Synchronisation en cours…", "info");
+  var local = lsGet(K.r, []);
+  if (local.length === 0) { toast("Aucune donnée locale à synchroniser", "info"); return; }
+  fbSaveAllRapports(local).then(function() {
+    toast("✓ " + local.length + " rapport(s) synchronisé(s) sur Firebase", "success");
+  }).catch(function(e) {
+    toast("Erreur sync: " + e.message, "error");
+  });
+};
+
 // START — wait for DOM + Firebase scripts to be fully loaded
 function startApp() {
   loadAll();
@@ -2149,11 +2188,12 @@ function loadAndSync() {
       fbSaveConfig("personnel", pers);
     }
 
-    // Migrate local rapports to Firebase
+    // Always push ALL local rapports to Firebase on startup
+    // This ensures nothing is ever lost
     if (rapports.length > 0) {
       fbSaveAllRapports(rapports).then(function(){
-        console.log("Migrated", rapports.length, "rapports to Firebase");
-      }).catch(function(e){ console.log("Migration error:", e); });
+        console.log("Pushed", rapports.length, "local rapports to Firebase");
+      }).catch(function(e){ console.log("Push error:", e); });
     }
 
     // Start real-time listeners
