@@ -583,27 +583,57 @@ function fromFV(v){
 function fromDoc(d){if(!d||!d.fields)return null;var o={};Object.keys(d.fields).forEach(function(k){o[k]=fromFV(d.fields[k])});return o;}
 
 function fsGetAll(col){
-  // Build URL with field mask for "rapports" to EXCLUDE photoPreviews
-  // (saves bandwidth, prevents timeout when there are many photos)
-  var url = FB_BASE+"/"+col+"?key="+FB_KEY+"&pageSize=1000";
-  if(col === "rapports"){
-    var fields = ["numero","date","type","client","site","equipement","marche","clientId",
-                  "chef","chefId","techniciens","techIds","etatIdx","texte","descSource",
-                  "savedAt","photoCount","treatedByManager","treatedAt","materiaux",
-                  "materiauxNotes","deviceId","updatedAt"];
-    fields.forEach(function(f){url += "&mask.fieldPaths=" + f;});
+  // Fetch all documents with PAGINATION + field mask for rapports.
+  // Firestore returns partial responses with nextPageToken when total exceeds size limits.
+  // We follow tokens until ALL documents are retrieved.
+  var allDocs = [];
+  var pageCount = 0;
+  
+  function buildBaseUrl(){
+    var url = FB_BASE+"/"+col+"?key="+FB_KEY+"&pageSize=50";
+    // For rapports, exclude photoPreviews to keep responses small
+    if(col === "rapports"){
+      var fields = ["numero","date","type","client","site","equipement","marche","clientId",
+                    "chef","chefId","techniciens","techIds","etatIdx","texte","descSource",
+                    "savedAt","photoCount","treatedByManager","treatedAt","materiaux",
+                    "materiauxNotes","deviceId","updatedAt"];
+      fields.forEach(function(f){url += "&mask.fieldPaths=" + f;});
+    }
+    return url;
   }
-  return fetch(url)
-    .then(function(r){
-      if(!r.ok){console.error("fsGetAll status:",r.status);return{documents:[]}}
-      return r.json();
-    })
-    .then(function(d){
-      var docs = (d.documents||[]).map(fromDoc).filter(Boolean);
-      console.log("fsGetAll("+col+"): retrieved "+docs.length+" documents");
-      return docs;
-    })
-    .catch(function(e){console.error("fsGetAll error:",e);return[]});
+  
+  function fetchPage(pageToken){
+    pageCount++;
+    if(pageCount > 50){console.error("fsGetAll: too many pages, stopping");return null;}
+    var url = buildBaseUrl();
+    if(pageToken) url += "&pageToken=" + encodeURIComponent(pageToken);
+    return fetch(url)
+      .then(function(r){
+        if(!r.ok){
+          console.error("fsGetAll("+col+") status:",r.status);
+          return null;
+        }
+        return r.json();
+      })
+      .then(function(d){
+        if(!d) return null;
+        var docs = (d.documents||[]).map(fromDoc).filter(Boolean);
+        allDocs = allDocs.concat(docs);
+        console.log("fsGetAll("+col+") page "+pageCount+": +"+docs.length+" (total "+allDocs.length+"), nextToken:"+(d.nextPageToken?"yes":"no"));
+        if(d.nextPageToken){
+          return fetchPage(d.nextPageToken);
+        }
+        return null;
+      });
+  }
+  
+  return fetchPage(null).then(function(){
+    console.log("fsGetAll("+col+") DONE:",allDocs.length,"documents total");
+    return allDocs;
+  }).catch(function(e){
+    console.error("fsGetAll error:",e);
+    return allDocs;
+  });
 }
 function fsSet(col,id,obj){
   var f={};Object.keys(obj).forEach(function(k){f[k]=toFV(obj[k])});
