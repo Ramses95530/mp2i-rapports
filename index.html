@@ -365,6 +365,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
     <button class="btn btn-success" id="btn-treat" type="button">✅ Marquer comme traité</button>
     <button class="btn btn-ghost btn-sm" id="btn-untreat" style="display:none;margin-top:8px" type="button">↩ Annuler traitement</button>
   </div>
+  <button class="btn btn-ai" id="btn-det-regen" type="button">🤖 Régénérer le rapport (IA)</button>
   <div class="row2">
     <button class="btn btn-ghost" id="btn-det-back" type="button">← Retour</button>
     <button class="btn btn-danger" id="btn-det-delete" type="button">🗑 Supprimer</button>
@@ -984,29 +985,34 @@ function updateWordCount(){
 function buildPrompt(num,dateStr,typeId,cl,site,equip,chef,techs,desc,pc){
   var ti=TYPES.find(function(x){return x.id===typeId})||TYPES[3];
   var sep="---------------------------------------------------";
+  var siteVal = site || "Non pr\u00e9cis\u00e9";
   var lines=[
     "Tu es le r\u00e9dacteur officiel de MP2I, Maintenance Prestations Ing\u00e9nierie et Installation.",
     "G\u00e9n\u00e8re un rapport d'intervention PROFESSIONNEL et COMPLET au format MP2I.",
-    "IMPORTANT: N'utilise AUCUN caract\u00e8re sp\u00e9cial unicode (pas de tableaux ASCII, pas de %, pas de symboles).",
-    "Utilise uniquement du texte normal avec des tirets - et des espaces.",
-    "Ne mets AUCUN underscore _ dans le rapport.",
-    "IMPORTANT: Recopie EXACTEMENT le Site / Adresse fourni ci-dessous. Ne le remplace pas par une autre adresse.",
     "",
-    "DONN\u00C9ES:",
+    "REGLES IMPORTANTES :",
+    "- N'utilise AUCUN caract\u00e8re sp\u00e9cial unicode (pas de tableaux ASCII, pas de %, pas de symboles).",
+    "- Utilise uniquement du texte normal avec des tirets - et des espaces.",
+    "- Ne mets AUCUN underscore _ dans le rapport.",
+    "- L'adresse exacte du site est : \"" + siteVal + "\". Recopie-la TELLE QUELLE dans le rapport, sans la remplacer ni la modifier.",
+    "- Base-toi UNIQUEMENT sur la description fournie pour les op\u00e9rations, constats, pi\u00e8ces et r\u00e9serves. Tu peux reformuler proprement et de mani\u00e8re professionnelle, mais ne rajoute pas d'\u00e9l\u00e9ments techniques (pi\u00e8ces, marques, mesures, mod\u00e8les) qui ne sont PAS mentionn\u00e9s.",
+    "- Tu peux structurer, embellir le style, corriger la grammaire et rendre le tout professionnel.",
+    "",
+    "DONN\u00C9ES :",
     "N\u00B0: "+num,
     "Date: "+dateStr,
     "Type: "+ti.name,
     "Client: "+cl.nom+(cl.marche?" - March\u00e9: "+cl.marche:""),
-    "Site: "+(site||"Non pr\u00e9cis\u00e9"),
+    "Site / Adresse exacte : " + siteVal,
     equip?"\u00C9quipement: "+equip:"",
     chef?"Chef de chantier: "+chef:"",
     techs&&techs.length?"Technicien(s): "+techs.join(", "):"",
     pc>0?pc+" photo(s) jointe(s)":"",
     "",
-    "Description:",
+    "DESCRIPTION DU TECHNICIEN (\u00e0 retravailler proprement, sans inventer de faits) :",
     desc,
     "",
-    "Format strict du rapport:",
+    "FORMAT EXACT DU RAPPORT \u00C0 PRODUIRE :",
     sep,
     "MP2I \u2014 Maintenance, Prestations, Ing\u00e9nierie et Installation",
     "RAPPORT D'INTERVENTION | Date: "+dateStr+" | R\u00e9f.: "+num,
@@ -1018,7 +1024,7 @@ function buildPrompt(num,dateStr,typeId,cl,site,equip,chef,techs,desc,pc){
     sep,
     "Client              : "+cl.nom,
     cl.marche?"March\u00e9              : "+cl.marche:"",
-    "Site / Adresse      : "+(site||"Non pr\u00e9cis\u00e9"),
+    "Site / Adresse      : " + siteVal,
     "Date d'intervention : "+dateStr,
     "Type d'intervention : "+ti.name,
     equip?"\u00C9quipement concern\u00e9 : "+equip:"",
@@ -1774,6 +1780,25 @@ function wireUp(){
     toast("Annul\u00e9","info");
   });
   document.getElementById("btn-det-back").addEventListener("click",function(){renderList(document.getElementById("search-inp").value||"");go("list");});
+  document.getElementById("btn-det-regen").addEventListener("click",function(){
+    if(!selR)return;
+    // Set form mode to edit and pre-populate with the current rapport values
+    formType = selR.type;
+    formMode = "edit";
+    // Pre-populate form with all existing values
+    var initData = {
+      type: selR.type,
+      date: selR.date,
+      clientId: selR.clientId,
+      site: selR.site,
+      equipement: selR.equipement || "",
+      chefId: selR.chefId || null,
+      techIds: (selR.techIds || []).slice(),
+      descSource: selR.descSource || "",
+      photoPreviews: (selR.photoPreviews || []).slice()
+    };
+    startForm("edit", initData);
+  });
   document.getElementById("btn-det-delete").addEventListener("click",function(){
     if(!selR||!confirm("Supprimer "+selR.numero+" ?"))return;
     var num=selR.numero;
