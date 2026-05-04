@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MP2I">
 <meta name="theme-color" content="#0a0d12">
-<title>MP2I — Rapports IA — v15.6447</title>
+<title>MP2I — Rapports IA — v15.6955</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%;-webkit-text-size-adjust:100%}
@@ -145,7 +145,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
     <div id="hdr-badge">⚡</div>
     <div>
       <div id="hdr-name">MP2I · IA</div>
-      <div id="hdr-sub">Rapports d'intervention</div>
+      <div id="hdr-sub">Rapports d'intervention · <span style="color:#22c55e">v15.6955</span></div>
     </div>
   </div>
   <div id="hdr-title"></div>
@@ -180,7 +180,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
   <div class="card card-hero" style="padding:22px 18px;position:relative;overflow:hidden">
     <div style="font-size:10px;font-weight:700;color:#4ade80;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">IA Activée · Équipe terrain</div>
     <div style="font-size:24px;font-weight:800;line-height:1.2;margin-bottom:6px">Rapports<br>d'intervention</div>
-    <div style="font-size:12px;color:#6b7a96">MP2I SASU · CFO/CFA · Île-de-France · <span style="color:#22c55e;font-weight:700">v15.6447</span></div>
+    <div style="font-size:12px;color:#6b7a96">MP2I SASU · CFO/CFA · Île-de-France · <span style="color:#22c55e;font-weight:700">v15.6955</span></div>
   </div>
   <div class="stats-row" id="dash-stats"></div>
   <div>
@@ -369,6 +369,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
     <button class="btn btn-ghost btn-sm" id="btn-untreat" style="display:none;margin-top:8px" type="button">↩ Annuler traitement</button>
   </div>
   <button class="btn btn-ai" id="btn-det-regen" type="button">🤖 Régénérer le rapport (IA)</button>
+  <button class="btn btn-success btn-sm" id="btn-det-repair" type="button" style="margin-top:6px">✨ Réparer ce rapport (sans IA)</button>
   <div class="row2">
     <button class="btn btn-ghost" id="btn-det-back" type="button">← Retour</button>
     <button class="btn btn-danger" id="btn-det-delete" type="button">🗑 Supprimer</button>
@@ -1830,6 +1831,23 @@ function wireUp(){
     toast("Annul\u00e9","info");
   });
   document.getElementById("btn-det-back").addEventListener("click",function(){renderList(document.getElementById("search-inp").value||"");go("list");});
+  document.getElementById("btn-det-repair").addEventListener("click",function(){
+    if(!selR)return;
+    if(!confirm("Réparer ce rapport en appliquant les valeurs actuelles (client, adresse, etc.) ? Le texte du rapport sera mis à jour sans appel IA."))return;
+    var newText = applyFactsToReport(selR.texte || "", fmt(selR.date), selR.type, 
+      {nom: selR.client, marche: selR.marche || ""}, selR.site, selR.equipement || "", 
+      selR.chef || "", selR.techniciens || []);
+    var i = rapports.findIndex(function(r){return r.numero===selR.numero});
+    if(i>=0){
+      rapports[i].texte = newText;
+      rapports[i].updatedAt = new Date().toISOString();
+      selR = rapports[i];
+    }
+    lsSet(K.r, rapports);
+    fbSaveRapport(selR);
+    document.getElementById("detail-rbox").textContent = newText;
+    toast("Rapport réparé ✓", "success");
+  });
   document.getElementById("btn-det-regen").addEventListener("click",function(){
     if(!selR)return;
     // Set form mode to edit and pre-populate with the current rapport values
