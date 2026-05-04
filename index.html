@@ -990,20 +990,15 @@ function buildPrompt(num,dateStr,typeId,cl,site,equip,chef,techs,desc,pc){
     "Tu es le r\u00e9dacteur officiel de MP2I, Maintenance Prestations Ing\u00e9nierie et Installation.",
     "G\u00e9n\u00e8re un rapport d'intervention PROFESSIONNEL et COMPLET au format MP2I.",
     "",
-    "REGLES IMPORTANTES :",
-    "- N'utilise AUCUN caract\u00e8re sp\u00e9cial unicode (pas de tableaux ASCII, pas de %, pas de symboles).",
+    "REGLES :",
+    "- N'utilise AUCUN caract\u00e8re sp\u00e9cial unicode (pas de tableaux ASCII, pas de %, pas de symboles, pas d'underscore _).",
     "- Utilise uniquement du texte normal avec des tirets - et des espaces.",
-    "- Ne mets AUCUN underscore _ dans le rapport.",
-    "- L'adresse exacte du site est : \"" + siteVal + "\". Recopie-la TELLE QUELLE dans le rapport, sans la remplacer ni la modifier.",
-    "- Base-toi UNIQUEMENT sur la description fournie pour les op\u00e9rations, constats, pi\u00e8ces et r\u00e9serves. Tu peux reformuler proprement et de mani\u00e8re professionnelle, mais ne rajoute pas d'\u00e9l\u00e9ments techniques (pi\u00e8ces, marques, mesures, mod\u00e8les) qui ne sont PAS mentionn\u00e9s.",
-    "- Tu peux structurer, embellir le style, corriger la grammaire et rendre le tout professionnel.",
+    "- Tu peux structurer, embellir le style, corriger la grammaire et rendre le rapport professionnel.",
+    "- Base-toi UNIQUEMENT sur la description fournie pour les op\u00e9rations, constats, pi\u00e8ces et r\u00e9serves. Ne rajoute pas d'\u00e9l\u00e9ments techniques (pi\u00e8ces, marques, mod\u00e8les, mesures) qui ne sont PAS mentionn\u00e9s.",
     "",
     "DONN\u00C9ES :",
-    "N\u00B0: "+num,
-    "Date: "+dateStr,
-    "Type: "+ti.name,
     "Client: "+cl.nom+(cl.marche?" - March\u00e9: "+cl.marche:""),
-    "Site / Adresse exacte : " + siteVal,
+    "Site / Adresse : " + siteVal,
     equip?"\u00C9quipement: "+equip:"",
     chef?"Chef de chantier: "+chef:"",
     techs&&techs.length?"Technicien(s): "+techs.join(", "):"",
@@ -1022,18 +1017,18 @@ function buildPrompt(num,dateStr,typeId,cl,site,equip,chef,techs,desc,pc){
     "",
     "1. IDENTIFICATION DE L'INTERVENTION",
     sep,
-    "Client              : "+cl.nom,
-    cl.marche?"March\u00e9              : "+cl.marche:"",
-    "Site / Adresse      : " + siteVal,
-    "Date d'intervention : "+dateStr,
-    "Type d'intervention : "+ti.name,
-    equip?"\u00C9quipement concern\u00e9 : "+equip:"",
-    chef?"Chef de chantier    : "+chef:"",
-    techs&&techs.length?"Technicien(s)       : "+techs.join(", "):"",
+    "Client              : <<CLIENT>>",
+    "March\u00e9              : <<MARCHE>>",
+    "Site / Adresse      : <<SITE>>",
+    "Date d'intervention : <<DATE>>",
+    "Type d'intervention : <<TYPE>>",
+    "\u00C9quipement concern\u00e9 : <<EQUIPEMENT>>",
+    "Chef de chantier    : <<CHEF>>",
+    "Technicien(s)       : <<TECHNICIENS>>",
     "",
     "2. CONTEXTE ET MOTIF D'INTERVENTION",
     sep,
-    "[2-3 phrases: contexte, signalement client, motif]",
+    "[2-3 phrases: contexte, signalement client, motif - bas\u00e9 sur la description]",
     "",
     "3. OP\u00C9RATIONS EFFECTU\u00C9ES",
     sep,
@@ -1045,11 +1040,10 @@ function buildPrompt(num,dateStr,typeId,cl,site,equip,chef,techs,desc,pc){
     sep,
     "\u00C9l\u00e9ment                    | \u00C9tat         | Remarque",
     "[\u00C9quipement principal]     | OK           | [commentaire]",
-    "[Pi\u00e8ce d\u00e9fectueuse]        | HORS SERVICE | [commentaire]",
     "",
     "5. R\u00C9SERVES ET PR\u00C9CONISATIONS",
     sep,
-    "[R\u00e9serves, pi\u00e8ces \u00e0 commander, actions imp\u00e9ratives]",
+    "[R\u00e9serves, pi\u00e8ces \u00e0 commander, actions imp\u00e9ratives - bas\u00e9 sur la description]",
     "",
     "6. PHOTOS DE L'INTERVENTION",
     sep,
@@ -1057,15 +1051,66 @@ function buildPrompt(num,dateStr,typeId,cl,site,equip,chef,techs,desc,pc){
     "",
     "7. VALIDATION",
     sep,
-    chef?"Chef de chantier : "+chef:"",
-    techs&&techs.length?"Technicien(s)    : "+techs.join(", "):"",
+    "Chef de chantier : <<CHEF>>",
+    "Technicien(s)    : <<TECHNICIENS>>",
     "Client / Repr\u00e9sentant :",
     "",
     sep,
     "MP2I SASU \u2014 La Frette-sur-Seine",
-    "\u00C9lectricit\u00e9 CFO/CFA \u00B7 March\u00e9s publics \u00B7 Confidentiel"
+    "\u00C9lectricit\u00e9 CFO/CFA \u00B7 March\u00e9s publics \u00B7 Confidentiel",
+    "",
+    "IMPORTANT : Garde les marqueurs <<CLIENT>>, <<MARCHE>>, <<SITE>>, <<DATE>>, <<TYPE>>, <<EQUIPEMENT>>, <<CHEF>>, <<TECHNICIENS>> EXACTEMENT TELS QUELS dans le rapport. Ne les remplace pas, ne les modifie pas, ne les compl\u00e8te pas. Ils seront remplac\u00e9s automatiquement apr\u00e8s ta r\u00e9ponse."
   ];
   return lines.filter(function(l){return l!==undefined&&l!==null&&l!==""}).join("\n");
+}
+
+// Post-process AI output to inject the EXACT factual values
+function applyFactsToReport(txt, dateStr, typeId, cl, site, equip, chef, techs){
+  var ti = TYPES.find(function(x){return x.id===typeId})||TYPES[3];
+  var siteVal = site || "Non pr\u00e9cis\u00e9";
+  var marcheVal = cl.marche || "Non communiqu\u00e9";
+  var equipVal = equip || "Non communiqu\u00e9";
+  var chefVal = chef || "Non d\u00e9sign\u00e9";
+  var techsVal = (techs && techs.length) ? techs.join(", ") : "Non d\u00e9sign\u00e9";
+  
+  // First pass: replace markers if AI used them
+  txt = txt.replace(/<<CLIENT>>/g, cl.nom);
+  txt = txt.replace(/<<MARCHE>>/g, marcheVal);
+  txt = txt.replace(/<<SITE>>/g, siteVal);
+  txt = txt.replace(/<<DATE>>/g, dateStr);
+  txt = txt.replace(/<<TYPE>>/g, ti.name);
+  txt = txt.replace(/<<EQUIPEMENT>>/g, equipVal);
+  txt = txt.replace(/<<CHEF>>/g, chefVal);
+  txt = txt.replace(/<<TECHNICIENS>>/g, techsVal);
+  
+  // Second pass: regex-replace identification fields IN THE IDENTIFICATION SECTION
+  // (this catches cases where AI ignored markers and generated wrong values directly)
+  // Pattern: "Field name : value" — replace value with correct one
+  // We are aggressive: we replace ANY occurrence of these field labels
+  
+  function replaceField(label, correctValue){
+    // Match "label    : anything until newline"
+    var re = new RegExp("(" + label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*:\\s*)([^\\n]*)", "g");
+    return txt.replace(re, function(_, prefix){ return prefix + correctValue; });
+  }
+  
+  txt = replaceField("Client",              cl.nom);
+  txt = replaceField("March\u00e9",          marcheVal);
+  txt = replaceField("Marche",               marcheVal);
+  txt = replaceField("Site / Adresse",       siteVal);
+  txt = replaceField("Site",                 siteVal);
+  txt = replaceField("Adresse",              siteVal);
+  txt = replaceField("Date d'intervention",  dateStr);
+  txt = replaceField("Type d'intervention",  ti.name);
+  txt = replaceField("\u00C9quipement concern\u00e9", equipVal);
+  txt = replaceField("Equipement concerne",  equipVal);
+  txt = replaceField("\u00C9quipement",      equipVal);
+  txt = replaceField("Equipement",           equipVal);
+  txt = replaceField("Chef de chantier",     chefVal);
+  txt = replaceField("Technicien\\(s\\)",    techsVal);
+  txt = replaceField("Techniciens",          techsVal);
+  
+  return txt;
 }
 
 function callAI(prompt){
@@ -1650,7 +1695,9 @@ function wireUp(){
     document.getElementById("btn-generate").style.display="none";
     document.getElementById("form-loading").style.display="block";
     var prompt=buildPrompt(num,fmt(date),formType,cl,site,equip,chefName,techNames,desc,photos.length);
-    callAI(prompt).then(function(txt){
+    callAI(prompt).then(function(rawTxt){
+      // Apply exact factual values to AI output (replace markers)
+      var txt = applyFactsToReport(rawTxt, fmt(date), formType, cl, site, equip, chefName, techNames);
       document.getElementById("form-loading").style.display="none";
       document.getElementById("btn-generate").style.display="flex";
       pending={
