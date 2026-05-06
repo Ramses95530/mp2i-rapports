@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MP2I">
 <meta name="theme-color" content="#0a0d12">
-<title>MP2I — Rapports IA — BUILD-MIGRATE-0004</title>
+<title>MP2I — Rapports IA — BUILD-FINAL-3865</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%;-webkit-text-size-adjust:100%}
@@ -145,7 +145,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
     <div id="hdr-badge">⚡</div>
     <div>
       <div id="hdr-name">MP2I · IA</div>
-      <div id="hdr-sub">Rapports d'intervention · <span style="color:#22c55e">BUILD-MIGRATE-0004</span></div>
+      <div id="hdr-sub">Rapports d'intervention · <span style="color:#22c55e">BUILD-FINAL-3865</span></div>
     </div>
   </div>
   <div id="hdr-title"></div>
@@ -175,13 +175,13 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <!-- DASHBOARD -->
 <div class="screen" id="screen-dash">
 <div class="body">
-  <div style="background:#22c55e;color:#0a0d12;padding:10px 14px;border-radius:10px;font-weight:800;font-size:14px;text-align:center;letter-spacing:1px">✅ VERSION ACTIVE : BUILD-MIGRATE-0004</div>
+  <div style="background:#22c55e;color:#0a0d12;padding:10px 14px;border-radius:10px;font-weight:800;font-size:14px;text-align:center;letter-spacing:1px">✅ VERSION ACTIVE : BUILD-FINAL-3865</div>
   <div id="mgr-banner" style="display:none" class="mgr-banner">🛡️ Mode Responsable actif</div>
   <div id="sync-badge"></div>
   <div class="card card-hero" style="padding:22px 18px;position:relative;overflow:hidden">
     <div style="font-size:10px;font-weight:700;color:#4ade80;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">IA Activée · Équipe terrain</div>
     <div style="font-size:24px;font-weight:800;line-height:1.2;margin-bottom:6px">Rapports<br>d'intervention</div>
-    <div style="font-size:12px;color:#6b7a96">MP2I SASU · CFO/CFA · Île-de-France · <span style="color:#22c55e;font-weight:700">BUILD-MIGRATE-0004</span></div>
+    <div style="font-size:12px;color:#6b7a96">MP2I SASU · CFO/CFA · Île-de-France · <span style="color:#22c55e;font-weight:700">BUILD-FINAL-3865</span></div>
   </div>
   <div class="stats-row" id="dash-stats"></div>
   <div>
@@ -392,6 +392,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
   <div class="setting-row" id="set-mgr"><span style="font-size:22px">🛡️</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Mode Responsable</div><div style="font-size:12px;color:#6b7a96" id="sub-mgr"></div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
   <div class="setting-row" id="set-key"><span style="font-size:22px">🔑</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Clé API</div><div style="font-size:12px;color:#6b7a96" id="sub-key"></div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
   <div class="setting-row" id="set-sync"><span style="font-size:22px">🔄</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Forcer la synchronisation</div><div style="font-size:12px;color:#6b7a96">Pousser les données locales vers Firebase</div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
+  <div class="setting-row" id="set-rescue"><span style="font-size:22px">📸</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Sauvegarder les photos manquantes</div><div style="font-size:12px;color:#6b7a96">Renvoyer les photos locales vers Firebase</div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
   <div class="card" style="font-size:13px;color:#6b7a96;line-height:1.8" id="sett-info"></div>
   <div style="height:14px"></div>
 </div>
@@ -744,37 +745,144 @@ function fsGetOne(col,id){
 function compressImg(dataUrl,maxW,quality){
   return new Promise(function(res){
     var img=new Image();
+    var done=false;
+    var doneFn=function(result){if(!done){done=true;res(result);}};
+    // Timeout fallback (in case Image events don't fire, e.g. JSDOM tests)
+    setTimeout(function(){doneFn(dataUrl);}, 500);
     img.onload=function(){
-      var c=document.createElement("canvas"),w=img.width,h=img.height;
-      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-      c.width=w;c.height=h;
-      c.getContext("2d").drawImage(img,0,0,w,h);
-      res(c.toDataURL("image/jpeg",quality));
+      try{
+        var c=document.createElement("canvas"),w=img.width,h=img.height;
+        if(!w||!h){doneFn(dataUrl);return;}
+        if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+        c.width=w;c.height=h;
+        c.getContext("2d").drawImage(img,0,0,w,h);
+        doneFn(c.toDataURL("image/jpeg",quality));
+      }catch(e){doneFn(dataUrl);}
     };
-    img.onerror=function(){res(dataUrl)};
+    img.onerror=function(){doneFn(dataUrl)};
     img.src=dataUrl;
   });
 }
 
 function fbSaveRapport(r){
-  var fb=Object.assign({},r,{deviceId:DEVICE_ID});
-  var promises=[];
-  if(r.photoPreviews&&r.photoPreviews.length>0){
-    promises=r.photoPreviews.map(function(p){return compressImg(p,480,0.40).catch(function(){return p})});
-  }
-  return Promise.all(promises).then(function(small){
-    if(small.length>0)fb.photoPreviews=small;
-    return fsSet("rapports",r.numero,fb).catch(function(e){
-      // Document too big? Try saving WITHOUT photos so at least the rapport is synced
-      console.warn("Save with photos failed for "+r.numero+":",e.message,"- retrying without photos");
-      var fbNoPhotos = Object.assign({}, fb);
-      delete fbNoPhotos.photoPreviews;
-      return fsSet("rapports",r.numero,fbNoPhotos).then(function(){
-        console.warn("Saved "+r.numero+" without photos. Photos remain in local storage only.");
+  // Strategy: 
+  // 1. Save the rapport metadata WITHOUT photos to /rapports/{numero}
+  // 2. Save photos in chunks to /rapports_photos/{numero}_{chunkIdx}
+  //    Each chunk holds up to 4 photos (compressed) to fit in 1MB Firestore doc limit
+  var fbMeta = Object.assign({}, r, {deviceId:DEVICE_ID});
+  delete fbMeta.photoPreviews;  // never save photos in main doc
+  
+  var photos = r.photoPreviews || [];
+  
+  return fsSet("rapports", r.numero, fbMeta).then(function(){
+    if(photos.length === 0) return null;
+    
+    // Compress photos for Firestore
+    var compressPromises = photos.map(function(p){
+      return compressImg(p, 480, 0.40).catch(function(){return p;});
+    });
+    
+    return Promise.all(compressPromises).then(function(smallPhotos){
+      // Split into chunks of 4 photos each
+      var CHUNK_SIZE = 4;
+      var chunks = [];
+      for(var i = 0; i < smallPhotos.length; i += CHUNK_SIZE){
+        chunks.push(smallPhotos.slice(i, i + CHUNK_SIZE));
+      }
+      
+      // Save each chunk to /rapports_photos/{numero}_chunk{idx}
+      var chunkPromises = chunks.map(function(chunk, idx){
+        var chunkDoc = {
+          numero: r.numero,
+          chunkIdx: idx,
+          totalChunks: chunks.length,
+          photos: chunk,
+          deviceId: DEVICE_ID,
+          updatedAt: new Date().toISOString()
+        };
+        return fsSet("rapports_photos", r.numero + "_" + idx, chunkDoc).catch(function(e){
+          console.warn("Photo chunk "+idx+" save failed for "+r.numero+":", e.message);
+          return null;
+        });
       });
+      
+      return Promise.all(chunkPromises).then(function(){
+        console.log("Saved "+r.numero+" with "+photos.length+" photos in "+chunks.length+" chunks");
+      });
+    });
+  }).catch(function(e){
+    console.error("Save failed for "+r.numero+":", e.message);
+  });
+}
+
+// Fetch photos for a rapport by numero (chunks combined)
+function fbFetchPhotos(numero){
+  // Try chunks 0..9 (max 36 photos but we limit to 20 = 5 chunks)
+  var fetches = [];
+  for(var i = 0; i < 10; i++){
+    fetches.push(fsGetOne("rapports_photos", numero + "_" + i));
+  }
+  return Promise.all(fetches).then(function(results){
+    var allPhotos = [];
+    var sorted = results.filter(Boolean).sort(function(a,b){
+      return (a.chunkIdx||0) - (b.chunkIdx||0);
+    });
+    sorted.forEach(function(chunk){
+      if(chunk && chunk.photos && chunk.photos.length){
+        allPhotos = allPhotos.concat(chunk.photos);
+      }
+    });
+    return allPhotos;
+  }).catch(function(){return [];});
+}
+
+// Re-upload photos for rapports that have photos locally but not in Firebase chunks
+function autoRescuePhotos(){
+  if(!rapports || rapports.length === 0) return Promise.resolve(0);
+  
+  // First pass: identify rapports needing rescue
+  var needsRescue = [];
+  var checks = rapports.filter(function(r){
+    return r && r.numero && r.photoPreviews && r.photoPreviews.length > 0;
+  }).map(function(r){
+    return fbFetchPhotos(r.numero).then(function(fbPhotos){
+      if(!fbPhotos || fbPhotos.length === 0){
+        needsRescue.push(r);
+      }
+    }).catch(function(){});
+  });
+  
+  return Promise.all(checks).then(function(){
+    if(needsRescue.length === 0){
+      console.log("Auto-rescue: nothing to rescue");
+      return 0;
+    }
+    
+    // Show toast to user so they know rescue is happening
+    var totalPhotos = needsRescue.reduce(function(s,r){return s+r.photoPreviews.length;},0);
+    toast("✨ Synchronisation de "+needsRescue.length+" rapport(s) ("+totalPhotos+" photos)...","info");
+    console.log("Auto-rescue: starting for "+needsRescue.length+" rapport(s), "+totalPhotos+" photos");
+    
+    // Upload sequentially to avoid overwhelming the network
+    var done = 0;
+    return needsRescue.reduce(function(chain, r){
+      return chain.then(function(){
+        return fbSaveRapport(r).then(function(){
+          done++;
+          console.log("Rescued "+r.numero+" ("+done+"/"+needsRescue.length+")");
+        }).catch(function(e){
+          console.error("Rescue failed for "+r.numero+":", e.message);
+        });
+      });
+    }, Promise.resolve()).then(function(){
+      toast("✅ Synchronisation terminée : "+done+" rapport(s) sauvés sur Firebase","success");
+      console.log("Auto-rescue done: "+done+"/"+needsRescue.length);
+      return done;
     });
   });
 }
+
+
 
 function fbSaveAllRapports(list){
   var p=Promise.resolve();
@@ -868,7 +976,10 @@ function syncFromFirestore(){
 }
 
 function startSync(){
-  syncFromFirestore();
+  syncFromFirestore().then(function(){
+    // After initial sync, check if any local rapports need photo rescue
+    setTimeout(autoRescuePhotos, 1000);
+  });
   if(syncTimer)clearInterval(syncTimer);
   syncTimer=setInterval(function(){
     // Don't sync while user is filling the form or reviewing - protects their input
@@ -1394,8 +1505,18 @@ function openDetail(num){
       }
     }, 50);
     
-    fsGetOne("rapports", num).then(function(full){
+    // Try to fetch photos: first from old format (photoPreviews in main doc), then from chunks
+    Promise.all([fsGetOne("rapports", num), fbFetchPhotos(num)]).then(function(results){
       lazyLoadResolved = true;
+      var full = results[0];
+      var chunkPhotos = results[1];
+      // Prefer chunks if available, otherwise old format
+      var photos = (chunkPhotos && chunkPhotos.length > 0) ? chunkPhotos : 
+                   (full && full.photoPreviews ? full.photoPreviews : []);
+      if(photos.length > 0){
+        full = full || {};
+        full.photoPreviews = photos;
+      }
       if(full && full.photoPreviews && full.photoPreviews.length>0){
         var idx=rapports.findIndex(function(x){return x.numero===num});
         if(idx>=0){
@@ -2151,6 +2272,15 @@ function wireUp(){
     fbSaveAllRapports(rapports).then(function(){
       toast("\u2713 "+rapports.length+" rapport(s) synchronis\u00e9(s)","success");
     });
+  document.getElementById("set-rescue").addEventListener("click",function(){
+    if(!confirm("Sauvegarder vers Firebase toutes les photos pr\u00e9sentes localement ? (peut prendre quelques minutes)"))return;
+    toast("\u23f3 V\u00e9rification des photos en cours...","info");
+    autoRescuePhotos().then(function(count){
+      if(count===0){toast("\u2705 Toutes les photos sont d\u00e9j\u00e0 sur Firebase","success");}
+    }).catch(function(e){
+      toast("\u26a0\ufe0f Erreur : "+e.message,"error");
+    });
+  });
   });
 
   // Personnel
