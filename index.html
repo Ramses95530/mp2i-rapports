@@ -156,7 +156,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <!-- SETUP -->
 <div class="screen on" id="screen-setup">
 <div class="body" style="justify-content:center;flex:1">
-  <div style="background:#15803d;border:1px solid #16a34a;border-radius:8px;padding:6px 12px;font-size:11px;color:#fff;font-weight:700;text-align:center;letter-spacing:1px;margin-bottom:14px">BUILD-RESCUE-V2</div>
+  <div style="background:#15803d;border:1px solid #16a34a;border-radius:8px;padding:6px 12px;font-size:11px;color:#fff;font-weight:700;text-align:center;letter-spacing:1px;margin-bottom:14px">BUILD-RESCUE-V3</div>
   <div class="card" style="text-align:center;padding:28px 20px">
     <div style="font-size:56px;margin-bottom:14px">🤖</div>
     <div style="font-size:20px;font-weight:800;margin-bottom:8px">MP2I — Configuration</div>
@@ -178,7 +178,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <div class="body">
   <div id="mgr-banner" style="display:none" class="mgr-banner">🛡️ Mode Responsable actif</div>
   <div id="sync-badge"></div>
-  <div style="background:#15803d;border:1px solid #16a34a;border-radius:8px;padding:6px 12px;font-size:11px;color:#fff;font-weight:700;text-align:center;letter-spacing:1px">BUILD-RESCUE-V2</div>
+  <div style="background:#15803d;border:1px solid #16a34a;border-radius:8px;padding:6px 12px;font-size:11px;color:#fff;font-weight:700;text-align:center;letter-spacing:1px">BUILD-RESCUE-V3</div>
   <div class="card card-hero" style="padding:22px 18px;position:relative;overflow:hidden">
     <div style="font-size:10px;font-weight:700;color:#4ade80;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">IA Activée · Équipe terrain</div>
     <div style="font-size:24px;font-weight:800;line-height:1.2;margin-bottom:6px">Rapports<br>d'intervention</div>
@@ -793,11 +793,26 @@ function autoRescuePhotos(){
   if(!rapports || rapports.length === 0) return Promise.resolve(0);
   
   var needsRescue = [];
+  // For each rapport, check both r.photoPreviews AND loadPhotosLocal() 
+  // (because photos may be in separate localStorage key)
   var checks = rapports.filter(function(r){
-    return r && r.numero && r.photoPreviews && r.photoPreviews.length > 0;
+    if(!r || !r.numero) return false;
+    // Check inline photos
+    if(r.photoPreviews && r.photoPreviews.length > 0) return true;
+    // Check separate localStorage key
+    var localPhotos = loadPhotosLocal(r.numero);
+    if(localPhotos && localPhotos.length > 0){
+      r.photoPreviews = localPhotos;  // hydrate the rapport
+      return true;
+    }
+    return false;
   }).map(function(r){
     return fbFetchPhotos(r.numero).then(function(fbPhotos){
       if(!fbPhotos || fbPhotos.length === 0){
+        needsRescue.push(r);
+      } else if(fbPhotos.length < r.photoPreviews.length){
+        // Firebase has fewer photos than local — re-upload to be safe
+        console.log("Local has more photos than FB for "+r.numero+" ("+r.photoPreviews.length+" vs "+fbPhotos.length+")");
         needsRescue.push(r);
       }
     }).catch(function(){});
