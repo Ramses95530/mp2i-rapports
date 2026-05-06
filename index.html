@@ -2,15 +2,15 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MP2I">
 <meta name="theme-color" content="#0a0d12">
-<title>MP2I — Rapports IA — BUILD-FINAL-3865</title>
+<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
+<title>MP2I — Rapports IA</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%;-webkit-text-size-adjust:100%}
@@ -145,7 +145,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
     <div id="hdr-badge">⚡</div>
     <div>
       <div id="hdr-name">MP2I · IA</div>
-      <div id="hdr-sub">Rapports d'intervention · <span style="color:#22c55e">BUILD-FINAL-3865</span></div>
+      <div id="hdr-sub">Rapports d'intervention</div>
     </div>
   </div>
   <div id="hdr-title"></div>
@@ -156,6 +156,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <!-- SETUP -->
 <div class="screen on" id="screen-setup">
 <div class="body" style="justify-content:center;flex:1">
+  <div style="background:#15803d;border:1px solid #16a34a;border-radius:8px;padding:6px 12px;font-size:11px;color:#fff;font-weight:700;text-align:center;letter-spacing:1px;margin-bottom:14px">BUILD-RESCUE-V2</div>
   <div class="card" style="text-align:center;padding:28px 20px">
     <div style="font-size:56px;margin-bottom:14px">🤖</div>
     <div style="font-size:20px;font-weight:800;margin-bottom:8px">MP2I — Configuration</div>
@@ -175,13 +176,13 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <!-- DASHBOARD -->
 <div class="screen" id="screen-dash">
 <div class="body">
-  <div style="background:#22c55e;color:#0a0d12;padding:10px 14px;border-radius:10px;font-weight:800;font-size:14px;text-align:center;letter-spacing:1px">✅ VERSION ACTIVE : BUILD-FINAL-3865</div>
   <div id="mgr-banner" style="display:none" class="mgr-banner">🛡️ Mode Responsable actif</div>
   <div id="sync-badge"></div>
+  <div style="background:#15803d;border:1px solid #16a34a;border-radius:8px;padding:6px 12px;font-size:11px;color:#fff;font-weight:700;text-align:center;letter-spacing:1px">BUILD-RESCUE-V2</div>
   <div class="card card-hero" style="padding:22px 18px;position:relative;overflow:hidden">
     <div style="font-size:10px;font-weight:700;color:#4ade80;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">IA Activée · Équipe terrain</div>
     <div style="font-size:24px;font-weight:800;line-height:1.2;margin-bottom:6px">Rapports<br>d'intervention</div>
-    <div style="font-size:12px;color:#6b7a96">MP2I SASU · CFO/CFA · Île-de-France · <span style="color:#22c55e;font-weight:700">BUILD-FINAL-3865</span></div>
+    <div style="font-size:12px;color:#6b7a96">MP2I SASU · CFO/CFA · Île-de-France</div>
   </div>
   <div class="stats-row" id="dash-stats"></div>
   <div>
@@ -369,8 +370,6 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
     <button class="btn btn-success" id="btn-treat" type="button">✅ Marquer comme traité</button>
     <button class="btn btn-ghost btn-sm" id="btn-untreat" style="display:none;margin-top:8px" type="button">↩ Annuler traitement</button>
   </div>
-  <button class="btn btn-ai" id="btn-det-regen" type="button">🤖 Régénérer le rapport (IA)</button>
-  <button class="btn btn-success btn-sm" id="btn-det-repair" type="button" style="margin-top:6px">✨ Réparer ce rapport (sans IA)</button>
   <div class="row2">
     <button class="btn btn-ghost" id="btn-det-back" type="button">← Retour</button>
     <button class="btn btn-danger" id="btn-det-delete" type="button">🗑 Supprimer</button>
@@ -392,7 +391,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
   <div class="setting-row" id="set-mgr"><span style="font-size:22px">🛡️</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Mode Responsable</div><div style="font-size:12px;color:#6b7a96" id="sub-mgr"></div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
   <div class="setting-row" id="set-key"><span style="font-size:22px">🔑</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Clé API</div><div style="font-size:12px;color:#6b7a96" id="sub-key"></div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
   <div class="setting-row" id="set-sync"><span style="font-size:22px">🔄</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Forcer la synchronisation</div><div style="font-size:12px;color:#6b7a96">Pousser les données locales vers Firebase</div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
-  <div class="setting-row" id="set-rescue"><span style="font-size:22px">📸</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Sauvegarder les photos manquantes</div><div style="font-size:12px;color:#6b7a96">Renvoyer les photos locales vers Firebase</div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
+  <div class="setting-row" id="set-rescue"><span style="font-size:22px">📸</span><div style="flex:1"><div style="font-weight:600;font-size:15px">Sauvegarder les photos manquantes</div><div style="font-size:12px;color:#6b7a96">Renvoyer les photos vers Firebase</div></div><span style="color:#6b7a96;font-size:18px">›</span></div>
   <div class="card" style="font-size:13px;color:#6b7a96;line-height:1.8" id="sett-info"></div>
   <div style="height:14px"></div>
 </div>
@@ -518,22 +517,17 @@ function pname(id){var p=pers.find(function(x){return x.id===id});return p?p.pre
 function lsGet(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function lsSet(k,v){
   try{localStorage.setItem(k,JSON.stringify(v));return true}
-  catch(e){console.error("lsSet failed for key "+k+":",e.message);return false}
+  catch(e){console.error("lsSet failed for "+k+":",e.message);return false}
 }
 
-// --- PHOTOS STORAGE (separate from rapport to avoid quota errors) ---
+// --- PHOTOS STORAGE (separate keys per rapport to avoid quota errors) ---
 function photoKey(numero){return "mp2i_ph_"+numero;}
 function savePhotosLocal(numero, photos){
   if(!photos || photos.length===0){
     try{localStorage.removeItem(photoKey(numero))}catch(e){}
     return true;
   }
-  var ok = lsSet(photoKey(numero), photos);
-  if(!ok){
-    console.warn("Could not save all photos for "+numero);
-    return false;
-  }
-  return ok;
+  return lsSet(photoKey(numero), photos);
 }
 function loadPhotosLocal(numero){
   try{
@@ -566,22 +560,17 @@ function loadRapportsWithPhotos(){
   var migrated = 0;
   list.forEach(function(r){
     if(r && r.numero){
-      // CASE 1: Photos already in separate storage (new format) - load them
       var ph = loadPhotosLocal(r.numero);
       if(ph && ph.length > 0){
         r.photoPreviews = ph;
-      }
-      // CASE 2: Photos still embedded in rapport (old format) - migrate to separate storage
-      else if(r.photoPreviews && r.photoPreviews.length > 0){
+      } else if(r.photoPreviews && r.photoPreviews.length > 0){
         savePhotosLocal(r.numero, r.photoPreviews);
         migrated++;
-        // Keep photoPreviews on r so they stay loaded
       }
     }
   });
   if(migrated > 0){
-    console.log("Migrated photos for "+migrated+" rapport(s) to separate storage");
-    // Save the compact list (without embedded photos) to free up the main storage
+    console.log("Migrated photos for "+migrated+" rapport(s)");
     setTimeout(function(){
       try{
         var compact = list.map(function(r){
@@ -590,13 +579,11 @@ function loadRapportsWithPhotos(){
           return c;
         });
         lsSet(K.r, compact);
-        console.log("Compacted rapports list after migration");
-      }catch(e){console.error("Compact save failed:",e);}
+      }catch(e){}
     }, 100);
   }
   return list;
 }
-
 
 
 function getDeviceId(){
@@ -671,57 +658,29 @@ function fromFV(v){
 function fromDoc(d){if(!d||!d.fields)return null;var o={};Object.keys(d.fields).forEach(function(k){o[k]=fromFV(d.fields[k])});return o;}
 
 function fsGetAll(col){
-  // Fetch all documents with PAGINATION + field mask for rapports.
-  // Firestore returns partial responses with nextPageToken when total exceeds size limits.
-  // We follow tokens until ALL documents are retrieved.
+  // Paginated fetch with photoPreviews excluded for /rapports to keep payload small
   var allDocs = [];
-  var pageCount = 0;
-  
-  function buildBaseUrl(){
-    var url = FB_BASE+"/"+col+"?key="+FB_KEY+"&pageSize=50";
-    // For rapports, exclude photoPreviews to keep responses small
-    if(col === "rapports"){
-      var fields = ["numero","date","type","client","site","equipement","marche","clientId",
-                    "chef","chefId","techniciens","techIds","etatIdx","texte","descSource",
-                    "savedAt","photoCount","treatedByManager","treatedAt","materiaux",
-                    "materiauxNotes","deviceId","updatedAt"];
-      fields.forEach(function(f){url += "&mask.fieldPaths=" + f;});
-    }
-    return url;
-  }
-  
   function fetchPage(pageToken){
-    pageCount++;
-    if(pageCount > 50){console.error("fsGetAll: too many pages, stopping");return null;}
-    var url = buildBaseUrl();
+    var url = FB_BASE+"/"+col+"?key="+FB_KEY+"&pageSize=300";
+    // Mask out photoPreviews for rapports collection (saved separately in chunks)
+    if(col === "rapports"){
+      var fields = ["numero","date","type","clientId","client","marche","site","equipement","chefId","chef","techIds","techniciens","etatIdx","texte","photoCount","descSource","treatedByManager","treatedAt","materiaux","materiauxNotes","savedAt","updatedAt","deviceId"];
+      url += "&" + fields.map(function(f){return "mask.fieldPaths="+f;}).join("&");
+    }
     if(pageToken) url += "&pageToken=" + encodeURIComponent(pageToken);
     return fetch(url)
-      .then(function(r){
-        if(!r.ok){
-          console.error("fsGetAll("+col+") status:",r.status);
-          return null;
-        }
-        return r.json();
-      })
+      .then(function(r){return r.ok?r.json():{}})
       .then(function(d){
-        if(!d) return null;
-        var docs = (d.documents||[]).map(fromDoc).filter(Boolean);
-        allDocs = allDocs.concat(docs);
-        console.log("fsGetAll("+col+") page "+pageCount+": +"+docs.length+" (total "+allDocs.length+"), nextToken:"+(d.nextPageToken?"yes":"no"));
+        if(d.documents){
+          allDocs = allDocs.concat(d.documents.map(fromDoc).filter(Boolean));
+        }
         if(d.nextPageToken){
           return fetchPage(d.nextPageToken);
         }
-        return null;
+        return allDocs;
       });
   }
-  
-  return fetchPage(null).then(function(){
-    console.log("fsGetAll("+col+") DONE:",allDocs.length,"documents total");
-    return allDocs;
-  }).catch(function(e){
-    console.error("fsGetAll error:",e);
-    return allDocs;
-  });
+  return fetchPage(null).catch(function(){return [];});
 }
 function fsSet(col,id,obj){
   var f={};Object.keys(obj).forEach(function(k){f[k]=toFV(obj[k])});
@@ -746,8 +705,7 @@ function compressImg(dataUrl,maxW,quality){
   return new Promise(function(res){
     var img=new Image();
     var done=false;
-    var doneFn=function(result){if(!done){done=true;res(result);}};
-    // Timeout fallback (in case Image events don't fire, e.g. JSDOM tests)
+    var doneFn=function(r){if(!done){done=true;res(r);}};
     setTimeout(function(){doneFn(dataUrl);}, 500);
     img.onload=function(){
       try{
@@ -765,32 +723,27 @@ function compressImg(dataUrl,maxW,quality){
 }
 
 function fbSaveRapport(r){
-  // Strategy: 
-  // 1. Save the rapport metadata WITHOUT photos to /rapports/{numero}
-  // 2. Save photos in chunks to /rapports_photos/{numero}_{chunkIdx}
-  //    Each chunk holds up to 4 photos (compressed) to fit in 1MB Firestore doc limit
+  // Save metadata WITHOUT photos to /rapports/{numero}
+  // Save photos in chunks of 4 to /rapports_photos/{numero}_{idx} to fit 1MB Firestore limit
   var fbMeta = Object.assign({}, r, {deviceId:DEVICE_ID});
-  delete fbMeta.photoPreviews;  // never save photos in main doc
+  delete fbMeta.photoPreviews;
   
   var photos = r.photoPreviews || [];
   
   return fsSet("rapports", r.numero, fbMeta).then(function(){
     if(photos.length === 0) return null;
     
-    // Compress photos for Firestore
     var compressPromises = photos.map(function(p){
       return compressImg(p, 480, 0.40).catch(function(){return p;});
     });
     
     return Promise.all(compressPromises).then(function(smallPhotos){
-      // Split into chunks of 4 photos each
       var CHUNK_SIZE = 4;
       var chunks = [];
       for(var i = 0; i < smallPhotos.length; i += CHUNK_SIZE){
         chunks.push(smallPhotos.slice(i, i + CHUNK_SIZE));
       }
       
-      // Save each chunk to /rapports_photos/{numero}_chunk{idx}
       var chunkPromises = chunks.map(function(chunk, idx){
         var chunkDoc = {
           numero: r.numero,
@@ -801,7 +754,7 @@ function fbSaveRapport(r){
           updatedAt: new Date().toISOString()
         };
         return fsSet("rapports_photos", r.numero + "_" + idx, chunkDoc).catch(function(e){
-          console.warn("Photo chunk "+idx+" save failed for "+r.numero+":", e.message);
+          console.warn("Chunk "+idx+" save failed for "+r.numero+":", e.message);
           return null;
         });
       });
@@ -815,9 +768,8 @@ function fbSaveRapport(r){
   });
 }
 
-// Fetch photos for a rapport by numero (chunks combined)
+// Fetch photos for a rapport from chunks
 function fbFetchPhotos(numero){
-  // Try chunks 0..9 (max 36 photos but we limit to 20 = 5 chunks)
   var fetches = [];
   for(var i = 0; i < 10; i++){
     fetches.push(fsGetOne("rapports_photos", numero + "_" + i));
@@ -840,7 +792,6 @@ function fbFetchPhotos(numero){
 function autoRescuePhotos(){
   if(!rapports || rapports.length === 0) return Promise.resolve(0);
   
-  // First pass: identify rapports needing rescue
   var needsRescue = [];
   var checks = rapports.filter(function(r){
     return r && r.numero && r.photoPreviews && r.photoPreviews.length > 0;
@@ -858,12 +809,10 @@ function autoRescuePhotos(){
       return 0;
     }
     
-    // Show toast to user so they know rescue is happening
     var totalPhotos = needsRescue.reduce(function(s,r){return s+r.photoPreviews.length;},0);
-    toast("✨ Synchronisation de "+needsRescue.length+" rapport(s) ("+totalPhotos+" photos)...","info");
-    console.log("Auto-rescue: starting for "+needsRescue.length+" rapport(s), "+totalPhotos+" photos");
+    toast("Synchronisation de "+needsRescue.length+" rapport(s) ("+totalPhotos+" photos)...","info");
+    console.log("Auto-rescue starting:", needsRescue.length, "rapports,", totalPhotos, "photos");
     
-    // Upload sequentially to avoid overwhelming the network
     var done = 0;
     return needsRescue.reduce(function(chain, r){
       return chain.then(function(){
@@ -875,14 +824,11 @@ function autoRescuePhotos(){
         });
       });
     }, Promise.resolve()).then(function(){
-      toast("✅ Synchronisation terminée : "+done+" rapport(s) sauvés sur Firebase","success");
-      console.log("Auto-rescue done: "+done+"/"+needsRescue.length);
+      toast("Synchronisation terminee : "+done+" rapport(s)","success");
       return done;
     });
   });
 }
-
-
 
 function fbSaveAllRapports(list){
   var p=Promise.resolve();
@@ -904,35 +850,27 @@ function syncFromFirestore(){
     docs.forEach(function(d){if(d&&d.numero)fbByNum[d.numero]=d;});
     var localByNum={};
     rapports.forEach(function(r){if(r&&r.numero)localByNum[r.numero]=r;});
-    
-    // Build merged list with TIMESTAMP-BASED conflict resolution
     var merged=[];
     var allNums={};
     Object.keys(localByNum).forEach(function(n){allNums[n]=true});
     Object.keys(fbByNum).forEach(function(n){allNums[n]=true});
-    
     var toPushToFb=[];
     Object.keys(allNums).forEach(function(num){
       var local=localByNum[num];
       var fb=fbByNum[num];
       if(local && !fb){
-        // Only local: push to Firebase
         merged.push(local);
         toPushToFb.push(local);
       } else if(!local && fb){
-        // Only Firebase: take FB
         merged.push(fb);
       } else if(local && fb){
-        // Both exist: compare timestamps
         var localTime = local.updatedAt || local.savedAt || local.date || "";
         var fbTime = fb.updatedAt || fb.savedAt || fb.date || "";
         if(localTime > fbTime){
-          // LOCAL is NEWER — keep local, push to Firebase
-          console.log("Local newer for",num,"("+localTime+" > "+fbTime+") — pushing to FB");
           merged.push(local);
           toPushToFb.push(local);
         } else {
-          // FB is newer or same — take FB but preserve local photos if FB is missing them
+          // Preserve local photos if FB doesn't have them
           if(local.photoPreviews && local.photoPreviews.length>0 && (!fb.photoPreviews || fb.photoPreviews.length===0)){
             fb.photoPreviews=local.photoPreviews;
           }
@@ -940,22 +878,17 @@ function syncFromFirestore(){
         }
       }
     });
-    
     if(toPushToFb.length>0){
-      console.log("Pushing",toPushToFb.length,"newer-local rapports to Firebase");
       fbSaveAllRapports(toPushToFb);
     }
-    
     if(merged.length>0){
       merged.sort(function(a,b){return(b.savedAt||b.date||"").localeCompare(a.savedAt||a.date||"")});
       rapports=merged;
       saveRapportsCompact();
+      // Don't disrupt form/review
       if(screen==="dash")refreshDash();
       else if(screen==="list")renderList(document.getElementById("search-inp").value||"");
       showSyncBadge();
-      console.log("Sync OK:",rapports.length,"rapports total");
-    } else {
-      console.log("Sync: no documents found");
     }
     return Promise.all([fsGetOne("config","clients"),fsGetOne("config","personnel")]);
   }).then(function(results){
@@ -963,13 +896,10 @@ function syncFromFirestore(){
     var fc=results[0],fp=results[1];
     if(fc&&fc.data&&fc.data.length>=clients.length){
       clients=fc.data;lsSet(K.c,clients);
-      // Don't refresh form while user is editing - it would reset client selection!
-      // Only refresh if NOT on form screen
       if(screen==="clients")renderCliList();
     } else if(clients.length>0){fbSaveConfig("clients",clients);}
     if(fp&&fp.data&&fp.data.length>=pers.length){
       pers=fp.data;lsSet(K.p,pers);
-      // Don't refresh pickers while user is editing - it could reset selections!
       if(screen==="personnel")renderPersList();
     } else if(pers.length>0){fbSaveConfig("personnel",pers);}
   }).catch(function(e){console.error("sync error:",e)});
@@ -977,17 +907,11 @@ function syncFromFirestore(){
 
 function startSync(){
   syncFromFirestore().then(function(){
-    // After initial sync, check if any local rapports need photo rescue
-    setTimeout(autoRescuePhotos, 1000);
+    setTimeout(autoRescuePhotos, 1500);
   });
   if(syncTimer)clearInterval(syncTimer);
   syncTimer=setInterval(function(){
-    // Don't sync while user is filling the form or reviewing - protects their input
-    if(screen==="form"||screen==="review"){
-      console.log("Sync skipped: user is editing");
-      return;
-    }
-    syncFromFirestore();
+    if(screen!=="form" && screen!=="review")syncFromFirestore();
   },30000);
 }
 
@@ -1225,29 +1149,28 @@ function updateWordCount(){
 function buildPrompt(num,dateStr,typeId,cl,site,equip,chef,techs,desc,pc){
   var ti=TYPES.find(function(x){return x.id===typeId})||TYPES[3];
   var sep="---------------------------------------------------";
-  var siteVal = site || "Non pr\u00e9cis\u00e9";
   var lines=[
     "Tu es le r\u00e9dacteur officiel de MP2I, Maintenance Prestations Ing\u00e9nierie et Installation.",
     "G\u00e9n\u00e8re un rapport d'intervention PROFESSIONNEL et COMPLET au format MP2I.",
+    "IMPORTANT: N'utilise AUCUN caract\u00e8re sp\u00e9cial unicode (pas de tableaux ASCII, pas de %, pas de symboles).",
+    "Utilise uniquement du texte normal avec des tirets - et des espaces.",
+    "Ne mets AUCUN underscore _ dans le rapport.",
     "",
-    "REGLES :",
-    "- N'utilise AUCUN caract\u00e8re sp\u00e9cial unicode (pas de tableaux ASCII, pas de %, pas de symboles, pas d'underscore _).",
-    "- Utilise uniquement du texte normal avec des tirets - et des espaces.",
-    "- Tu peux structurer, embellir le style, corriger la grammaire et rendre le rapport professionnel.",
-    "- Base-toi UNIQUEMENT sur la description fournie pour les op\u00e9rations, constats, pi\u00e8ces et r\u00e9serves. Ne rajoute pas d'\u00e9l\u00e9ments techniques (pi\u00e8ces, marques, mod\u00e8les, mesures) qui ne sont PAS mentionn\u00e9s.",
-    "",
-    "DONN\u00C9ES :",
+    "DONN\u00C9ES:",
+    "N\u00B0: "+num,
+    "Date: "+dateStr,
+    "Type: "+ti.name,
     "Client: "+cl.nom+(cl.marche?" - March\u00e9: "+cl.marche:""),
-    "Site / Adresse : " + siteVal,
+    "Site: "+(site||"Non pr\u00e9cis\u00e9"),
     equip?"\u00C9quipement: "+equip:"",
     chef?"Chef de chantier: "+chef:"",
     techs&&techs.length?"Technicien(s): "+techs.join(", "):"",
     pc>0?pc+" photo(s) jointe(s)":"",
     "",
-    "DESCRIPTION DU TECHNICIEN (\u00e0 retravailler proprement, sans inventer de faits) :",
+    "Description:",
     desc,
     "",
-    "FORMAT EXACT DU RAPPORT \u00C0 PRODUIRE :",
+    "Format strict du rapport:",
     sep,
     "MP2I \u2014 Maintenance, Prestations, Ing\u00e9nierie et Installation",
     "RAPPORT D'INTERVENTION | Date: "+dateStr+" | R\u00e9f.: "+num,
@@ -1257,18 +1180,18 @@ function buildPrompt(num,dateStr,typeId,cl,site,equip,chef,techs,desc,pc){
     "",
     "1. IDENTIFICATION DE L'INTERVENTION",
     sep,
-    "Client              : <<CLIENT>>",
-    "March\u00e9              : <<MARCHE>>",
-    "Site / Adresse      : <<SITE>>",
-    "Date d'intervention : <<DATE>>",
-    "Type d'intervention : <<TYPE>>",
-    "\u00C9quipement concern\u00e9 : <<EQUIPEMENT>>",
-    "Chef de chantier    : <<CHEF>>",
-    "Technicien(s)       : <<TECHNICIENS>>",
+    "Client              : "+cl.nom,
+    cl.marche?"March\u00e9              : "+cl.marche:"",
+    "Site / Adresse      : "+(site||"Non pr\u00e9cis\u00e9"),
+    "Date d'intervention : "+dateStr,
+    "Type d'intervention : "+ti.name,
+    equip?"\u00C9quipement concern\u00e9 : "+equip:"",
+    chef?"Chef de chantier    : "+chef:"",
+    techs&&techs.length?"Technicien(s)       : "+techs.join(", "):"",
     "",
     "2. CONTEXTE ET MOTIF D'INTERVENTION",
     sep,
-    "[2-3 phrases: contexte, signalement client, motif - bas\u00e9 sur la description]",
+    "[2-3 phrases: contexte, signalement client, motif]",
     "",
     "3. OP\u00C9RATIONS EFFECTU\u00C9ES",
     sep,
@@ -1280,10 +1203,11 @@ function buildPrompt(num,dateStr,typeId,cl,site,equip,chef,techs,desc,pc){
     sep,
     "\u00C9l\u00e9ment                    | \u00C9tat         | Remarque",
     "[\u00C9quipement principal]     | OK           | [commentaire]",
+    "[Pi\u00e8ce d\u00e9fectueuse]        | HORS SERVICE | [commentaire]",
     "",
     "5. R\u00C9SERVES ET PR\u00C9CONISATIONS",
     sep,
-    "[R\u00e9serves, pi\u00e8ces \u00e0 commander, actions imp\u00e9ratives - bas\u00e9 sur la description]",
+    "[R\u00e9serves, pi\u00e8ces \u00e0 commander, actions imp\u00e9ratives]",
     "",
     "6. PHOTOS DE L'INTERVENTION",
     sep,
@@ -1291,66 +1215,15 @@ function buildPrompt(num,dateStr,typeId,cl,site,equip,chef,techs,desc,pc){
     "",
     "7. VALIDATION",
     sep,
-    "Chef de chantier : <<CHEF>>",
-    "Technicien(s)    : <<TECHNICIENS>>",
+    chef?"Chef de chantier : "+chef:"",
+    techs&&techs.length?"Technicien(s)    : "+techs.join(", "):"",
     "Client / Repr\u00e9sentant :",
     "",
     sep,
     "MP2I SASU \u2014 La Frette-sur-Seine",
-    "\u00C9lectricit\u00e9 CFO/CFA \u00B7 March\u00e9s publics \u00B7 Confidentiel",
-    "",
-    "IMPORTANT : Garde les marqueurs <<CLIENT>>, <<MARCHE>>, <<SITE>>, <<DATE>>, <<TYPE>>, <<EQUIPEMENT>>, <<CHEF>>, <<TECHNICIENS>> EXACTEMENT TELS QUELS dans le rapport. Ne les remplace pas, ne les modifie pas, ne les compl\u00e8te pas. Ils seront remplac\u00e9s automatiquement apr\u00e8s ta r\u00e9ponse."
+    "\u00C9lectricit\u00e9 CFO/CFA \u00B7 March\u00e9s publics \u00B7 Confidentiel"
   ];
   return lines.filter(function(l){return l!==undefined&&l!==null&&l!==""}).join("\n");
-}
-
-// Post-process AI output to inject the EXACT factual values
-function applyFactsToReport(txt, dateStr, typeId, cl, site, equip, chef, techs){
-  var ti = TYPES.find(function(x){return x.id===typeId})||TYPES[3];
-  var siteVal = site || "Non pr\u00e9cis\u00e9";
-  var marcheVal = cl.marche || "Non communiqu\u00e9";
-  var equipVal = equip || "Non communiqu\u00e9";
-  var chefVal = chef || "Non d\u00e9sign\u00e9";
-  var techsVal = (techs && techs.length) ? techs.join(", ") : "Non d\u00e9sign\u00e9";
-  
-  // First pass: replace markers if AI used them
-  txt = txt.replace(/<<CLIENT>>/g, cl.nom);
-  txt = txt.replace(/<<MARCHE>>/g, marcheVal);
-  txt = txt.replace(/<<SITE>>/g, siteVal);
-  txt = txt.replace(/<<DATE>>/g, dateStr);
-  txt = txt.replace(/<<TYPE>>/g, ti.name);
-  txt = txt.replace(/<<EQUIPEMENT>>/g, equipVal);
-  txt = txt.replace(/<<CHEF>>/g, chefVal);
-  txt = txt.replace(/<<TECHNICIENS>>/g, techsVal);
-  
-  // Second pass: regex-replace identification fields IN THE IDENTIFICATION SECTION
-  // (this catches cases where AI ignored markers and generated wrong values directly)
-  // Pattern: "Field name : value" — replace value with correct one
-  // We are aggressive: we replace ANY occurrence of these field labels
-  
-  function replaceField(label, correctValue){
-    // Match "label    : anything until newline"
-    var re = new RegExp("(" + label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*:\\s*)([^\\n]*)", "g");
-    return txt.replace(re, function(_, prefix){ return prefix + correctValue; });
-  }
-  
-  txt = replaceField("Client",              cl.nom);
-  txt = replaceField("March\u00e9",          marcheVal);
-  txt = replaceField("Marche",               marcheVal);
-  txt = replaceField("Site / Adresse",       siteVal);
-  txt = replaceField("Site",                 siteVal);
-  txt = replaceField("Adresse",              siteVal);
-  txt = replaceField("Date d'intervention",  dateStr);
-  txt = replaceField("Type d'intervention",  ti.name);
-  txt = replaceField("\u00C9quipement concern\u00e9", equipVal);
-  txt = replaceField("Equipement concerne",  equipVal);
-  txt = replaceField("\u00C9quipement",      equipVal);
-  txt = replaceField("Equipement",           equipVal);
-  txt = replaceField("Chef de chantier",     chefVal);
-  txt = replaceField("Technicien\\(s\\)",    techsVal);
-  txt = replaceField("Techniciens",          techsVal);
-  
-  return txt;
 }
 
 function callAI(prompt){
@@ -1488,72 +1361,6 @@ function openDetail(num){
   var r=rapports.find(function(x){return x.numero===num});
   if(!r){toast("Rapport introuvable","error");return;}
   selR=r;
-  // Lazy-load photos if needed (from Firebase)
-  if(r.photoCount>0 && (!r.photoPreviews || r.photoPreviews.length===0)){
-    // Mark as loading
-    var lazyLoadResolved = false;
-    // Show loading message after a small delay (only if photos haven't loaded yet)
-    setTimeout(function(){
-      if(lazyLoadResolved) return;
-      if(screen==="detail" && selR && selR.numero===num){
-        var pcL=document.getElementById("detail-photos-card");
-        if(pcL){
-          pcL.style.display="block";
-          document.getElementById("detail-photos-title").textContent="Photos — chargement...";
-          document.getElementById("detail-photos-grid").innerHTML='<div style="color:#6b7a96;padding:16px;text-align:center">⏳ Récupération des '+r.photoCount+' photo(s) depuis Firebase...</div>';
-        }
-      }
-    }, 50);
-    
-    // Try to fetch photos: first from old format (photoPreviews in main doc), then from chunks
-    Promise.all([fsGetOne("rapports", num), fbFetchPhotos(num)]).then(function(results){
-      lazyLoadResolved = true;
-      var full = results[0];
-      var chunkPhotos = results[1];
-      // Prefer chunks if available, otherwise old format
-      var photos = (chunkPhotos && chunkPhotos.length > 0) ? chunkPhotos : 
-                   (full && full.photoPreviews ? full.photoPreviews : []);
-      if(photos.length > 0){
-        full = full || {};
-        full.photoPreviews = photos;
-      }
-      if(full && full.photoPreviews && full.photoPreviews.length>0){
-        var idx=rapports.findIndex(function(x){return x.numero===num});
-        if(idx>=0){
-          rapports[idx].photoPreviews=full.photoPreviews;
-          selR=rapports[idx];
-          saveRapportsCompact();
-        }
-        if(screen==="detail" && selR && selR.numero===num){
-          var pc=document.getElementById("detail-photos-card");
-          pc.style.display="block";
-          document.getElementById("detail-photos-title").textContent="Photos — "+full.photoPreviews.length;
-          document.getElementById("detail-photos-grid").innerHTML=full.photoPreviews.map(function(s){return "<div class=\"pthumb\"><img src=\""+s+"\" alt=\"\"></div>";}).join("");
-        }
-      } else {
-        // Photos not in Firebase either
-        if(screen==="detail" && selR && selR.numero===num){
-          var pc2=document.getElementById("detail-photos-card");
-          if(pc2){
-            pc2.style.display="block";
-            document.getElementById("detail-photos-title").textContent="Photos — indisponibles";
-            document.getElementById("detail-photos-grid").innerHTML='<div style="color:#f59e0b;padding:16px;text-align:center;line-height:1.5"><strong>⚠️ Les '+r.photoCount+' photo(s) ne sont pas récupérables</strong><br><span style="font-size:12px;color:#6b7a96">Elles n\'ont pas pu être synchronisées vers Firebase (taille trop grande). Originaux uniquement disponibles sur l\'appareil créateur.</span></div>';
-          }
-        }
-      }
-    }).catch(function(e){
-      lazyLoadResolved = true;
-      console.error("Photo lazy-load failed:",e);
-      if(screen==="detail" && selR && selR.numero===num){
-        var pc3=document.getElementById("detail-photos-card");
-        if(pc3){
-          pc3.style.display="block";
-          document.getElementById("detail-photos-title").textContent="Photos — erreur";
-          document.getElementById("detail-photos-grid").innerHTML='<div style="color:#ef4444;padding:16px;text-align:center">⚠️ Erreur de récupération</div>';
-        }
-      }
-    });
-  }
   detEdit=false;
   detEtat=r.etatIdx||0;
   detMat=r.materiaux?r.materiaux.slice():[];
@@ -1578,6 +1385,38 @@ function openDetail(num){
     pc.style.display="block";
     document.getElementById("detail-photos-title").textContent="Photos \u2014 "+r.photoPreviews.length;
     document.getElementById("detail-photos-grid").innerHTML=r.photoPreviews.map(function(s){return '<div class="pthumb"><img src="'+s+'" alt=""></div>'}).join("");
+  } else if(r.photoCount > 0){
+    // Lazy-load photos from Firebase chunks
+    var lazyResolved = false;
+    pc.style.display="block";
+    document.getElementById("detail-photos-title").textContent="Photos \u2014 chargement...";
+    document.getElementById("detail-photos-grid").innerHTML='<div style="color:#6b7a96;padding:16px;text-align:center">Recuperation des '+r.photoCount+' photo(s) depuis Firebase...</div>';
+    
+    fbFetchPhotos(num).then(function(photos){
+      lazyResolved = true;
+      if(photos && photos.length > 0){
+        var idx=rapports.findIndex(function(x){return x.numero===num});
+        if(idx>=0){
+          rapports[idx].photoPreviews=photos;
+          selR=rapports[idx];
+          savePhotosLocal(num, photos);
+        }
+        if(screen==="detail" && selR && selR.numero===num){
+          document.getElementById("detail-photos-title").textContent="Photos \u2014 "+photos.length;
+          document.getElementById("detail-photos-grid").innerHTML=photos.map(function(s){return '<div class="pthumb"><img src="'+s+'" alt=""></div>'}).join("");
+        }
+      } else {
+        if(screen==="detail" && selR && selR.numero===num){
+          document.getElementById("detail-photos-title").textContent="Photos \u2014 indisponibles";
+          document.getElementById("detail-photos-grid").innerHTML='<div style="color:#f59e0b;padding:16px;text-align:center;line-height:1.5"><strong>Les '+r.photoCount+' photo(s) ne sont pas recuperables sur cet appareil</strong><br><span style="font-size:12px;color:#6b7a96;margin-top:8px;display:inline-block">Photos non synchronisees vers Firebase. Ouvrez l app sur l appareil createur pour les voir.</span></div>';
+        }
+      }
+    }).catch(function(){
+      if(screen==="detail" && selR && selR.numero===num){
+        document.getElementById("detail-photos-title").textContent="Photos \u2014 erreur";
+        document.getElementById("detail-photos-grid").innerHTML='<div style="color:#ef4444;padding:16px;text-align:center">Erreur de recuperation</div>';
+      }
+    });
   } else pc.style.display="none";
   // Etat
   renderEtatPicker("detail-etat",detEtat,function(i){
@@ -1981,9 +1820,7 @@ function wireUp(){
     document.getElementById("btn-generate").style.display="none";
     document.getElementById("form-loading").style.display="block";
     var prompt=buildPrompt(num,fmt(date),formType,cl,site,equip,chefName,techNames,desc,photos.length);
-    callAI(prompt).then(function(rawTxt){
-      // Apply exact factual values to AI output (replace markers)
-      var txt = applyFactsToReport(rawTxt, fmt(date), formType, cl, site, equip, chefName, techNames);
+    callAI(prompt).then(function(txt){
       document.getElementById("form-loading").style.display="none";
       document.getElementById("btn-generate").style.display="flex";
       pending={
@@ -2024,26 +1861,16 @@ function wireUp(){
     pending.materiaux=revMat.slice();
     pending.materiauxNotes=(document.getElementById("rev-mat-notes").value||"").trim();
     pending.deviceId=DEVICE_ID;
-    // CRITICAL: timestamp this save so it wins against older Firebase versions
-    pending.updatedAt=new Date().toISOString();
-    pending.savedAt=new Date().toISOString();
     if(formMode==="new"){rapports.unshift(pending);}
     else{
       var i=rapports.findIndex(function(r){return r.numero===pending.numero});
       if(i>=0){
-        // Preserve treated status from existing record
-        var preservedTreated = rapports[i].treatedByManager||false;
-        rapports[i]=Object.assign({},pending,{treatedByManager:preservedTreated});
+        rapports[i]=Object.assign({},pending,{updatedAt:new Date().toISOString(),treatedByManager:rapports[i].treatedByManager||false});
         selR=rapports[i];
       } else rapports.unshift(pending);
     }
     saveRapportsCompact();
-    // Save to Firebase IMMEDIATELY and AWAIT it before allowing next sync to overwrite
-    fbSaveRapport(pending).then(function(){
-      console.log("Saved to Firebase:",pending.numero);
-    }).catch(function(e){
-      console.error("Firebase save failed:",e);
-    });
+    fbSaveRapport(pending);
     refreshDash();formType=null;
     toast("Sauvegard\u00e9 \u2713","success");go("dash");
   });
@@ -2075,15 +1902,8 @@ function wireUp(){
   document.getElementById("btn-det-txt-save").addEventListener("click",function(){
     if(!selR)return;
     var txt=document.getElementById("detail-ta").value;
-    var now=new Date().toISOString();
     var i=rapports.findIndex(function(r){return r.numero===selR.numero});
-    if(i>=0){
-      rapports[i].texte=txt;
-      rapports[i].etatIdx=detEtat;
-      rapports[i].updatedAt=now;
-      rapports[i].savedAt=now;
-      selR=rapports[i];
-    }
+    if(i>=0){rapports[i].texte=txt;rapports[i].etatIdx=detEtat;rapports[i].updatedAt=new Date().toISOString();selR=rapports[i];}
     saveRapportsCompact();
     fbSaveRapport(selR);
     detEdit=false;
@@ -2096,14 +1916,8 @@ function wireUp(){
   });
   document.getElementById("btn-det-etat-save").addEventListener("click",function(){
     if(!selR)return;
-    var now=new Date().toISOString();
     var i=rapports.findIndex(function(r){return r.numero===selR.numero});
-    if(i>=0){
-      rapports[i].etatIdx=detEtat;
-      rapports[i].updatedAt=now;
-      rapports[i].savedAt=now;
-      selR=rapports[i];
-    }
+    if(i>=0){rapports[i].etatIdx=detEtat;rapports[i].updatedAt=new Date().toISOString();selR=rapports[i];}
     saveRapportsCompact();
     fbSaveRapport(selR);
     this.style.display="none";
@@ -2136,49 +1950,6 @@ function wireUp(){
     toast("Annul\u00e9","info");
   });
   document.getElementById("btn-det-back").addEventListener("click",function(){renderList(document.getElementById("search-inp").value||"");go("list");});
-  document.getElementById("btn-det-repair").addEventListener("click",function(){
-    if(!selR)return;
-    if(!confirm("Réparer ce rapport en appliquant les valeurs actuelles (client, adresse, etc.) ? Le texte du rapport sera mis à jour sans appel IA."))return;
-    var newText = applyFactsToReport(selR.texte || "", fmt(selR.date), selR.type, 
-      {nom: selR.client, marche: selR.marche || ""}, selR.site, selR.equipement || "", 
-      selR.chef || "", selR.techniciens || []);
-    var i = rapports.findIndex(function(r){return r.numero===selR.numero});
-    if(i>=0){
-      rapports[i].texte = newText;
-      rapports[i].updatedAt = new Date().toISOString();
-      selR = rapports[i];
-    }
-    lsSet(K.r, rapports);
-    fbSaveRapport(selR);
-    document.getElementById("detail-rbox").textContent = newText;
-    toast("Rapport réparé ✓", "success");
-  });
-  document.getElementById("btn-det-regen").addEventListener("click",function(){
-    if(!selR)return;
-    formType = selR.type;
-    formMode = "edit";
-    // Try to recover descSource - if missing (old rapport), extract context section from texte
-    var desc = selR.descSource || "";
-    if(!desc && selR.texte){
-      // Extract the CONTEXTE section from the existing rapport text as a starting point
-      var m = selR.texte.match(/2\.\s*CONTEXTE[^\n]*\n[-\s]*\n([\s\S]*?)(?=\n\d+\.\s|$)/);
-      if(m && m[1]) desc = m[1].trim();
-      // If still empty, use a placeholder so user knows to fill it
-      if(!desc) desc = "(Modifiez ce texte pour d\u00e9crire l'intervention avant de r\u00e9g\u00e9n\u00e9rer)";
-    }
-    var initData = {
-      type: selR.type,
-      date: selR.date,
-      clientId: selR.clientId,
-      site: selR.site,
-      equipement: selR.equipement || "",
-      chefId: selR.chefId || null,
-      techIds: (selR.techIds || []).slice(),
-      descSource: desc,
-      photoPreviews: (selR.photoPreviews || []).slice()
-    };
-    startForm("edit", initData);
-  });
   document.getElementById("btn-det-delete").addEventListener("click",function(){
     if(!selR||!confirm("Supprimer "+selR.numero+" ?"))return;
     var num=selR.numero;
@@ -2273,12 +2044,10 @@ function wireUp(){
       toast("\u2713 "+rapports.length+" rapport(s) synchronis\u00e9(s)","success");
     });
   document.getElementById("set-rescue").addEventListener("click",function(){
-    if(!confirm("Sauvegarder vers Firebase toutes les photos pr\u00e9sentes localement ? (peut prendre quelques minutes)"))return;
-    toast("\u23f3 V\u00e9rification des photos en cours...","info");
+    if(!confirm("Sauvegarder vers Firebase toutes les photos locales ? Cela peut prendre quelques minutes."))return;
+    toast("Verification des photos...","info");
     autoRescuePhotos().then(function(count){
-      if(count===0){toast("\u2705 Toutes les photos sont d\u00e9j\u00e0 sur Firebase","success");}
-    }).catch(function(e){
-      toast("\u26a0\ufe0f Erreur : "+e.message,"error");
+      if(count===0)toast("Toutes les photos sont deja sur Firebase","success");
     });
   });
   });
