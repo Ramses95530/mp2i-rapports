@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MP2I">
 <meta name="theme-color" content="#0a0d12">
-<title>MP2I — Rapports IA — BUILD-FIX-FORM</title>
+<title>MP2I — Rapports IA — BUILD-MIGRATE-0004</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%;-webkit-text-size-adjust:100%}
@@ -145,7 +145,7 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
     <div id="hdr-badge">⚡</div>
     <div>
       <div id="hdr-name">MP2I · IA</div>
-      <div id="hdr-sub">Rapports d'intervention · <span style="color:#22c55e">BUILD-FIX-FORM</span></div>
+      <div id="hdr-sub">Rapports d'intervention · <span style="color:#22c55e">BUILD-MIGRATE-0004</span></div>
     </div>
   </div>
   <div id="hdr-title"></div>
@@ -175,13 +175,13 @@ textarea.redit{width:100%;min-height:360px;background:#060910;border:1.5px solid
 <!-- DASHBOARD -->
 <div class="screen" id="screen-dash">
 <div class="body">
-  <div style="background:#22c55e;color:#0a0d12;padding:10px 14px;border-radius:10px;font-weight:800;font-size:14px;text-align:center;letter-spacing:1px">✅ VERSION ACTIVE : BUILD-FIX-FORM</div>
+  <div style="background:#22c55e;color:#0a0d12;padding:10px 14px;border-radius:10px;font-weight:800;font-size:14px;text-align:center;letter-spacing:1px">✅ VERSION ACTIVE : BUILD-MIGRATE-0004</div>
   <div id="mgr-banner" style="display:none" class="mgr-banner">🛡️ Mode Responsable actif</div>
   <div id="sync-badge"></div>
   <div class="card card-hero" style="padding:22px 18px;position:relative;overflow:hidden">
     <div style="font-size:10px;font-weight:700;color:#4ade80;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">IA Activée · Équipe terrain</div>
     <div style="font-size:24px;font-weight:800;line-height:1.2;margin-bottom:6px">Rapports<br>d'intervention</div>
-    <div style="font-size:12px;color:#6b7a96">MP2I SASU · CFO/CFA · Île-de-France · <span style="color:#22c55e;font-weight:700">BUILD-FIX-FORM</span></div>
+    <div style="font-size:12px;color:#6b7a96">MP2I SASU · CFO/CFA · Île-de-France · <span style="color:#22c55e;font-weight:700">BUILD-MIGRATE-0004</span></div>
   </div>
   <div class="stats-row" id="dash-stats"></div>
   <div>
@@ -515,7 +515,88 @@ function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"
 function pname(id){var p=pers.find(function(x){return x.id===id});return p?p.prenom+" "+p.nom:""}
 
 function lsGet(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
-function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function lsSet(k,v){
+  try{localStorage.setItem(k,JSON.stringify(v));return true}
+  catch(e){console.error("lsSet failed for key "+k+":",e.message);return false}
+}
+
+// --- PHOTOS STORAGE (separate from rapport to avoid quota errors) ---
+function photoKey(numero){return "mp2i_ph_"+numero;}
+function savePhotosLocal(numero, photos){
+  if(!photos || photos.length===0){
+    try{localStorage.removeItem(photoKey(numero))}catch(e){}
+    return true;
+  }
+  var ok = lsSet(photoKey(numero), photos);
+  if(!ok){
+    console.warn("Could not save all photos for "+numero);
+    return false;
+  }
+  return ok;
+}
+function loadPhotosLocal(numero){
+  try{
+    var s = localStorage.getItem(photoKey(numero));
+    return s ? JSON.parse(s) : null;
+  }catch(e){return null;}
+}
+function deletePhotosLocal(numero){
+  try{localStorage.removeItem(photoKey(numero))}catch(e){}
+}
+function rapportWithoutPhotos(r){
+  var copy = Object.assign({}, r);
+  delete copy.photoPreviews;
+  return copy;
+}
+function saveRapportsCompact(){
+  var compact = rapports.map(rapportWithoutPhotos);
+  var ok = lsSet(K.r, compact);
+  rapports.forEach(function(r){
+    if(r && r.numero && r.photoPreviews && r.photoPreviews.length > 0){
+      savePhotosLocal(r.numero, r.photoPreviews);
+    }
+  });
+  return ok;
+}
+function loadRapportsWithPhotos(){
+  var s = localStorage.getItem(K.r);
+  var list = [];
+  try{ list = s ? JSON.parse(s) : []; }catch(e){ list = []; }
+  var migrated = 0;
+  list.forEach(function(r){
+    if(r && r.numero){
+      // CASE 1: Photos already in separate storage (new format) - load them
+      var ph = loadPhotosLocal(r.numero);
+      if(ph && ph.length > 0){
+        r.photoPreviews = ph;
+      }
+      // CASE 2: Photos still embedded in rapport (old format) - migrate to separate storage
+      else if(r.photoPreviews && r.photoPreviews.length > 0){
+        savePhotosLocal(r.numero, r.photoPreviews);
+        migrated++;
+        // Keep photoPreviews on r so they stay loaded
+      }
+    }
+  });
+  if(migrated > 0){
+    console.log("Migrated photos for "+migrated+" rapport(s) to separate storage");
+    // Save the compact list (without embedded photos) to free up the main storage
+    setTimeout(function(){
+      try{
+        var compact = list.map(function(r){
+          var c = Object.assign({}, r);
+          delete c.photoPreviews;
+          return c;
+        });
+        lsSet(K.r, compact);
+        console.log("Compacted rapports list after migration");
+      }catch(e){console.error("Compact save failed:",e);}
+    }, 100);
+  }
+  return list;
+}
+
+
 
 function getDeviceId(){
   var id=localStorage.getItem(K.did);
@@ -550,7 +631,7 @@ function migrate(){
 // --- LOAD ---
 function loadAll(){
   migrate();
-  rapports=lsGet(K.r,[]);
+  rapports=loadRapportsWithPhotos();
   clients=lsGet(K.c,null);
   if(!clients||!clients.length)clients=DEF_CLIENTS.map(function(c){return Object.assign({},c)});
   pers=lsGet(K.p,null);
@@ -683,7 +764,15 @@ function fbSaveRapport(r){
   }
   return Promise.all(promises).then(function(small){
     if(small.length>0)fb.photoPreviews=small;
-    return fsSet("rapports",r.numero,fb);
+    return fsSet("rapports",r.numero,fb).catch(function(e){
+      // Document too big? Try saving WITHOUT photos so at least the rapport is synced
+      console.warn("Save with photos failed for "+r.numero+":",e.message,"- retrying without photos");
+      var fbNoPhotos = Object.assign({}, fb);
+      delete fbNoPhotos.photoPreviews;
+      return fsSet("rapports",r.numero,fbNoPhotos).then(function(){
+        console.warn("Saved "+r.numero+" without photos. Photos remain in local storage only.");
+      });
+    });
   });
 }
 
@@ -752,7 +841,7 @@ function syncFromFirestore(){
     if(merged.length>0){
       merged.sort(function(a,b){return(b.savedAt||b.date||"").localeCompare(a.savedAt||a.date||"")});
       rapports=merged;
-      lsSet(K.r,rapports);
+      saveRapportsCompact();
       if(screen==="dash")refreshDash();
       else if(screen==="list")renderList(document.getElementById("search-inp").value||"");
       showSyncBadge();
@@ -1288,25 +1377,61 @@ function openDetail(num){
   var r=rapports.find(function(x){return x.numero===num});
   if(!r){toast("Rapport introuvable","error");return;}
   selR=r;
-  // Lazy-load photos if needed
+  // Lazy-load photos if needed (from Firebase)
   if(r.photoCount>0 && (!r.photoPreviews || r.photoPreviews.length===0)){
+    // Mark as loading
+    var lazyLoadResolved = false;
+    // Show loading message after a small delay (only if photos haven't loaded yet)
+    setTimeout(function(){
+      if(lazyLoadResolved) return;
+      if(screen==="detail" && selR && selR.numero===num){
+        var pcL=document.getElementById("detail-photos-card");
+        if(pcL){
+          pcL.style.display="block";
+          document.getElementById("detail-photos-title").textContent="Photos — chargement...";
+          document.getElementById("detail-photos-grid").innerHTML='<div style="color:#6b7a96;padding:16px;text-align:center">⏳ Récupération des '+r.photoCount+' photo(s) depuis Firebase...</div>';
+        }
+      }
+    }, 50);
+    
     fsGetOne("rapports", num).then(function(full){
+      lazyLoadResolved = true;
       if(full && full.photoPreviews && full.photoPreviews.length>0){
         var idx=rapports.findIndex(function(x){return x.numero===num});
         if(idx>=0){
           rapports[idx].photoPreviews=full.photoPreviews;
           selR=rapports[idx];
-          lsSet(K.r,rapports);
+          saveRapportsCompact();
         }
-        // Refresh photos in detail view
-        if(screen==="detail"){
+        if(screen==="detail" && selR && selR.numero===num){
           var pc=document.getElementById("detail-photos-card");
           pc.style.display="block";
           document.getElementById("detail-photos-title").textContent="Photos — "+full.photoPreviews.length;
           document.getElementById("detail-photos-grid").innerHTML=full.photoPreviews.map(function(s){return "<div class=\"pthumb\"><img src=\""+s+"\" alt=\"\"></div>";}).join("");
         }
+      } else {
+        // Photos not in Firebase either
+        if(screen==="detail" && selR && selR.numero===num){
+          var pc2=document.getElementById("detail-photos-card");
+          if(pc2){
+            pc2.style.display="block";
+            document.getElementById("detail-photos-title").textContent="Photos — indisponibles";
+            document.getElementById("detail-photos-grid").innerHTML='<div style="color:#f59e0b;padding:16px;text-align:center;line-height:1.5"><strong>⚠️ Les '+r.photoCount+' photo(s) ne sont pas récupérables</strong><br><span style="font-size:12px;color:#6b7a96">Elles n\'ont pas pu être synchronisées vers Firebase (taille trop grande). Originaux uniquement disponibles sur l\'appareil créateur.</span></div>';
+          }
+        }
       }
-    }).catch(function(e){console.log("Photo lazy-load failed:",e)});
+    }).catch(function(e){
+      lazyLoadResolved = true;
+      console.error("Photo lazy-load failed:",e);
+      if(screen==="detail" && selR && selR.numero===num){
+        var pc3=document.getElementById("detail-photos-card");
+        if(pc3){
+          pc3.style.display="block";
+          document.getElementById("detail-photos-title").textContent="Photos — erreur";
+          document.getElementById("detail-photos-grid").innerHTML='<div style="color:#ef4444;padding:16px;text-align:center">⚠️ Erreur de récupération</div>';
+        }
+      }
+    });
   }
   detEdit=false;
   detEtat=r.etatIdx||0;
@@ -1791,7 +1916,7 @@ function wireUp(){
         selR=rapports[i];
       } else rapports.unshift(pending);
     }
-    lsSet(K.r,rapports);
+    saveRapportsCompact();
     // Save to Firebase IMMEDIATELY and AWAIT it before allowing next sync to overwrite
     fbSaveRapport(pending).then(function(){
       console.log("Saved to Firebase:",pending.numero);
@@ -1838,7 +1963,7 @@ function wireUp(){
       rapports[i].savedAt=now;
       selR=rapports[i];
     }
-    lsSet(K.r,rapports);
+    saveRapportsCompact();
     fbSaveRapport(selR);
     detEdit=false;
     document.getElementById("detail-rbox").textContent=txt;
@@ -1858,7 +1983,7 @@ function wireUp(){
       rapports[i].savedAt=now;
       selR=rapports[i];
     }
-    lsSet(K.r,rapports);
+    saveRapportsCompact();
     fbSaveRapport(selR);
     this.style.display="none";
     toast("\u00C9tat sauvegard\u00e9 \u2713","success");
@@ -1873,7 +1998,7 @@ function wireUp(){
     if(!selR)return;
     var i=rapports.findIndex(function(r){return r.numero===selR.numero});
     if(i>=0){rapports[i].treatedByManager=true;rapports[i].treatedAt=new Date().toISOString();selR=rapports[i];}
-    lsSet(K.r,rapports);
+    saveRapportsCompact();
     fbSaveRapport(selR);
     document.getElementById("btn-treat").style.display="none";
     document.getElementById("btn-untreat").style.display="flex";
@@ -1883,7 +2008,7 @@ function wireUp(){
     if(!selR)return;
     var i=rapports.findIndex(function(r){return r.numero===selR.numero});
     if(i>=0){rapports[i].treatedByManager=false;rapports[i].treatedAt=null;selR=rapports[i];}
-    lsSet(K.r,rapports);
+    saveRapportsCompact();
     fbSaveRapport(selR);
     document.getElementById("btn-treat").style.display="flex";
     document.getElementById("btn-untreat").style.display="none";
@@ -1937,7 +2062,7 @@ function wireUp(){
     if(!selR||!confirm("Supprimer "+selR.numero+" ?"))return;
     var num=selR.numero;
     rapports=rapports.filter(function(r){return r.numero!==num});
-    lsSet(K.r,rapports);
+    saveRapportsCompact();
     fbDeleteRapport(num);
     refreshDash();
     toast("Supprim\u00e9","info");
@@ -1962,7 +2087,7 @@ function wireUp(){
       rapports[i].updatedAt=new Date().toISOString();
       selR=rapports[i];
     }
-    lsSet(K.r,rapports);
+    saveRapportsCompact();
     fbSaveRapport(selR);
     toast("Mat\u00e9riaux sauvegard\u00e9s \u2713","success");
   });
